@@ -60,4 +60,4 @@ jobs:
         with:
           app-name: 'campus-study-budy'
           slot-name: 'Production'
-          package: 'build/libs/*-SNAPSHOT.jar'
+          package: 'build/libs/myapp.jar'
