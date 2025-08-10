@@ -2,52 +2,43 @@ name: Build and deploy JAR app to Azure Web App - campus-study-budy
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: windows-latest
-    permissions:
-      contents: read
+  build-and-deploy:
+    runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Set up Java version
+      - name: Set up Java 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'microsoft'
 
-      # Make Gradle wrapper executable (not strictly needed on Windows, but good habit)
-      - name: Grant execute permission for gradlew
+      - name: Make Gradle wrapper executable
         run: chmod +x gradlew
 
       - name: Build with Gradle
         run: ./gradlew clean build -x test
-        # remove "-x test" if you want to run tests during build
 
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4
-        with:
-          name: java-app
-          path: '${{ github.workspace }}/build/libs/*.jar'
+      - name: Find the executable (fat) JAR
+        id: find_jar
+        run: |
+          echo "Contents of build/libs:"
+          ls -la build/libs || true
+          # pick the first .jar that is NOT a plain / sources jar
+          JAR=$(find build/libs -maxdepth 1 -type f -name '*.jar' ! -iname '*plain*' ! -iname '*sources*' | head -n 1)
+          if [ -z "$JAR" ]; then
+            echo "No suitable JAR found in build/libs"
+            exit 1
+          fi
+          echo "Found JAR: $JAR"
+          echo "jar_path=$JAR" >> $GITHUB_OUTPUT
 
-  deploy:
-    runs-on: windows-latest
-    needs: build
-    permissions:
-      id-token: write
-      contents: read
-
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: java-app
-      
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -60,4 +51,4 @@ jobs:
         with:
           app-name: 'campus-study-budy'
           slot-name: 'Production'
-          package: 'build/libs/myapp.jar'
+          package: ${{ steps.find_jar.outputs.jar_path }}
