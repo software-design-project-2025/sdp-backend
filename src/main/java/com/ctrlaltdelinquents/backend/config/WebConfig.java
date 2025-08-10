@@ -1,4 +1,4 @@
-package com.yourorg.backend.config;
+package com.ctrlaltdelinquents.backend.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.*;
