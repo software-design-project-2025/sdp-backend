@@ -19,6 +19,7 @@ class TestControllerTest {
 
     @Test
     @DisplayName("GET /api/hello should return hello message")
+    @WithMockUser(username="user", roles = {"USER"})
     void testHelloEndpoint() throws Exception {
         mockMvc.perform(get("/api/hello"))
                 .andExpect(status().isOk())
