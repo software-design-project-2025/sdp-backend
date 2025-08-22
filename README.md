@@ -1,0 +1,1 @@
+[![codecov](https://codecov.io/github/software-design-project-2025/sdp-backend/branch/testing-pipeline%2Fndivho/graph/badge.svg?token=4EF06CDYUG)](https://codecov.io/github/software-design-project-2025/sdp-backend)
