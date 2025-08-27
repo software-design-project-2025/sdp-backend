@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class BackendApplication {
 
-	@GetMapping("/message")
+	@GetMapping("/")
 	public String message(){
 		return "App successfully deployed on Azure";
 	}
