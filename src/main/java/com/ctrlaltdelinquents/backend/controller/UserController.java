@@ -1,6 +1,6 @@
 package com.ctrlaltdelinquents.backend.controller;
 
-import com.ctrlaltdelinquents.backend.model.UserModel;
+import com.ctrlaltdelinquents.backend.model.User;
 import com.ctrlaltdelinquents.backend.repo.UserRepo;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +24,13 @@ public class UserController {
 
     // GET all users
     @GetMapping("/user")  
-    public List<UserModel> getAllUsers() {
+    public List<User> getAllUsers() {
         return userRepo.findAll();
     }
 
     // POST a new user
     @PostMapping("/user")
-    public UserModel createUser(@RequestBody UserModel user) {
+    public User createUser(@RequestBody User user) {
         return userRepo.save(user);
     }
 }
