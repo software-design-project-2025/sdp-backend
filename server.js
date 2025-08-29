@@ -2,7 +2,8 @@
 const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
-const { createClient } = require('@supabase/supabase-js');
+const { Pool } = require('pg');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 const PORT = 3001;
@@ -11,20 +12,53 @@ const PORT = 3001;
 app.use(cors());
 app.use(express.json());
 
-// Supabase client
-const supabase = createClient(
-  process.env.SUPABASE_URL || 'https://cixdigfxjvranfleyamm.supabase.co',
-  process.env.SUPABASE_SERVICE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNpeGRpZ2Z4anZyYW5mbGV5YW1tIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NTIwOTI3MCwiZXhwIjoyMDcwNzg1MjcwfQ.nMqnTnX4eqyiyjaGFv_YyE2RBxVchQ66uXvY32tgiD4',
-  {
-    auth: {
-      lock: false // disables Navigator.locks
-    }
+// PostgreSQL connection pool for YOUR SDP database
+const pool = new Pool({
+  user: 'postgres',
+  host: 'localhost',
+  database: 'sdp',
+  password: 'studybuddy@25',
+  port: 5432,
+});
+
+// Rate limiting for signups
+const signupLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Limit each IP to 5 signup requests per windowMs
+  message: { error: 'Too many signup attempts, please try again later.' }
+});
+
+// Verify database connection and table structure
+const verifyDatabase = async () => {
+  try {
+    // Check if users table exists and has correct structure
+    const usersTable = await pool.query(`
+      SELECT column_name, data_type 
+      FROM information_schema.columns 
+      WHERE table_name = 'users'
+    `);
+    
+    console.log('✅ Users table columns:', usersTable.rows);
+    
+    // Check if profiles table exists
+    const profilesTable = await pool.query(`
+      SELECT column_name, data_type 
+      FROM information_schema.columns 
+      WHERE table_name = 'profiles'
+    `);
+    
+    console.log('✅ Profiles table columns:', profilesTable.rows);
+    
+  } catch (error) {
+    console.error('❌ Database verification error:', error);
   }
-);
+};
 
-const JWT_SECRET = process.env.SUPABASE_JWT_SECRET || 'tSDJ/iNL86HXDpNUX8QqOXV5In+bcyrWx6CYRfigDRLzfQlPD+U13ASZdRo0fpIzxIEc4/QwHVcUuAfqicnYnA==';
+verifyDatabase();
 
-// Auth Middleware
+const JWT_SECRET = process.env.SUPABASE_JWT_SECRET || 'your-supabase-jwt-secret';
+
+// Auth Middleware - Verify Supabase JWT
 const authMiddleware = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -37,7 +71,7 @@ const authMiddleware = async (req, res, next) => {
 
     const token = authHeader.substring(7);
 
-    // Verify JWT token
+    // Verify JWT token using Supabase's secret
     let decoded;
     try {
       decoded = jwt.verify(token, JWT_SECRET);
@@ -47,20 +81,11 @@ const authMiddleware = async (req, res, next) => {
       });
     }
 
-    // Verify user exists in Supabase
-    const { data: user, error } = await supabase.auth.getUser(token);
-    
-    if (error || !user) {
-      return res.status(401).json({ 
-        error: 'User not found' 
-      });
-    }
-
-    // Add user to request object
+    // Add user info from JWT to request object
     req.user = {
-      id: user.user.id,
-      email: user.user.email,
-      supabaseUserId: user.user.id
+      id: decoded.sub,
+      email: decoded.email,
+      supabaseUserId: decoded.sub
     };
 
     next();
@@ -78,29 +103,32 @@ app.get('/', (req, res) => {
   res.json({ 
     message: 'Campus Study Buddy API',
     version: '1.0.0',
-    endpoints: {
-      health: '/api/health',
-      signup: 'POST /api/users',
-      getProfile: 'GET /api/profile',
-      updateProfile: 'PUT /api/profile',
-      getCurrentUser: 'GET /api/me'
-    }
+    database: 'SDP'
   });
 });
 
-// Health check (public)
-app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    message: 'Campus Study Buddy API is running',
-    timestamp: new Date().toISOString()
-  });
-});
-
-// Sign up route (public)
-app.post('/api/users', async (req, res) => {
+// Health check
+app.get('/api/health', async (req, res) => {
   try {
-    const { supabaseUserId, email, displayName } = req.body;
+    await pool.query('SELECT 1');
+    res.json({ 
+      status: 'OK', 
+      database: 'SDP Connected',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      status: 'Error', 
+      database: 'SDP Disconnected',
+      error: error.message 
+    });
+  }
+});
+
+// SIGN UP ROUTE - REMOVED authMiddleware AND ADDED rate limiting
+app.post('/api/users', signupLimiter, async (req, res) => {
+  try {
+    const { supabaseUserId, email, displayName, major, year } = req.body;
     
     if (!supabaseUserId || !email) {
       return res.status(400).json({ 
@@ -108,131 +136,169 @@ app.post('/api/users', async (req, res) => {
       });
     }
 
-    console.log('Creating user:', { supabaseUserId, email, displayName });
+    console.log('Creating user in SDP database:', { supabaseUserId, email, displayName });
 
-    // Insert into your custom users table
-    const { data, error } = await supabase
-      .from('users')
-      .insert([
-        { 
-          supabase_user_id: supabaseUserId,
-          email: email,
-          display_name: displayName
-        }
-      ])
-      .select();
-    
-    if (error) {
-      console.error('Database error:', error);
-      return res.status(400).json({ error: error.message });
+    // Insert into users table
+    const userResult = await pool.query(
+      `INSERT INTO users (supabase_user_id, email, display_name) 
+       VALUES ($1, $2, $3) 
+       RETURNING user_id, supabase_user_id, email, display_name, created_at`,
+      [supabaseUserId, email, displayName || '']
+    );
+
+    const userId = userResult.rows[0].user_id;
+
+    // Insert into profiles table
+    if (major || year) {
+      await pool.query(
+        `INSERT INTO profiles (user_id, major, year) 
+         VALUES ($1, $2, $3)`,
+        [userId, major || null, year || null]
+      );
     }
     
     res.json({ 
       success: true, 
-      message: 'User created successfully',
-      user: data[0] 
+      message: 'User created successfully in SDP database',
+      user: userResult.rows[0] 
     });
 
   } catch (error) {
-    console.error('Server error:', error);
+    if (error.code === '23505') { // Unique violation
+      return res.status(409).json({ 
+        error: 'User already exists in SDP database' 
+      });
+    }
+    
+    console.error('Database error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-// 🔐 PROTECTED ROUTES
+// 🔐 PROTECTED ROUTES (keep authMiddleware for these)
 
-// Get current user's profile
+// Get current user's profile from SDP database
 app.get('/api/profile', authMiddleware, async (req, res) => {
   try {
-    const { data, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('supabase_user_id', req.user.supabaseUserId)
-      .single();
+    const userResult = await pool.query(
+      `SELECT u.user_id, u.supabase_user_id, u.email, u.display_name, u.created_at,
+              p.major, p.year, p.bio, p.interests
+       FROM users u
+       LEFT JOIN profiles p ON u.user_id = p.user_id
+       WHERE u.supabase_user_id = $1`,
+      [req.user.supabaseUserId]
+    );
     
-    if (error) {
-      return res.status(404).json({ error: 'User profile not found' });
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: 'User profile not found in SDP database' });
     }
     
     res.json({
       user: req.user,
-      profile: data
+      profile: userResult.rows[0]
     });
 
   } catch (error) {
+    console.error('Database error:', error);
     res.status(500).json({ error: 'Failed to fetch profile' });
   }
 });
 
-// Get current user data
+// Get current user data from SDP database
 app.get('/api/me', authMiddleware, async (req, res) => {
   try {
-    const { data, error } = await supabase
-      .from('users')
-      .select('*')
-      .eq('supabase_user_id', req.user.supabaseUserId)
-      .single();
+    const result = await pool.query(
+      `SELECT u.user_id, u.supabase_user_id, u.email, u.display_name, u.created_at,
+              p.major, p.year, p.bio, p.interests
+       FROM users u
+       LEFT JOIN profiles p ON u.user_id = p.user_id
+       WHERE u.supabase_user_id = $1`,
+      [req.user.supabaseUserId]
+    );
     
-    if (error) throw error;
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found in SDP database' });
+    }
     
-    res.json(data);
+    res.json(result.rows[0]);
 
   } catch (error) {
+    console.error('Database error:', error);
     res.status(500).json({ error: 'Failed to fetch user data' });
   }
 });
 
-// Update user profile
+// Update user profile in SDP database
 app.put('/api/profile', authMiddleware, async (req, res) => {
   try {
-    const { displayName, email } = req.body;
+    const { displayName, major, year, bio, interests } = req.body;
     
-    const updates = {};
-    if (displayName) updates.display_name = displayName;
-    if (email) updates.email = email;
+    // Update users table
+    const userResult = await pool.query(
+      `UPDATE users 
+       SET display_name = $1
+       WHERE supabase_user_id = $2 
+       RETURNING user_id`,
+      [displayName, req.user.supabaseUserId]
+    );
+    
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
 
-    const { data, error } = await supabase
-      .from('users')
-      .update(updates)
-      .eq('supabase_user_id', req.user.supabaseUserId)
-      .select();
-    
-    if (error) throw error;
+    const userId = userResult.rows[0].user_id;
+
+    // Update or insert into profiles table
+    const profileResult = await pool.query(
+      `INSERT INTO profiles (user_id, major, year, bio, interests)
+       VALUES ($1, $2, $3, $4, $5)
+       ON CONFLICT (user_id) 
+       DO UPDATE SET 
+         major = EXCLUDED.major,
+         year = EXCLUDED.year,
+         bio = EXCLUDED.bio,
+         interests = EXCLUDED.interests
+       RETURNING *`,
+      [userId, major, year, bio, interests]
+    );
     
     res.json({ 
       success: true, 
       message: 'Profile updated successfully',
-      user: data[0] 
+      profile: profileResult.rows[0] 
     });
 
   } catch (error) {
+    console.error('Database error:', error);
     res.status(500).json({ error: 'Failed to update profile' });
   }
 });
 
-// Get all users (for testing)
+// Get all users from SDP database (for testing)
 app.get('/api/users', authMiddleware, async (req, res) => {
   try {
-    const { data, error } = await supabase
-      .from('users')
-      .select('*');
+    const result = await pool.query(
+      `SELECT u.user_id, u.supabase_user_id, u.email, u.display_name, u.created_at,
+              p.major, p.year
+       FROM users u
+       LEFT JOIN profiles p ON u.user_id = p.user_id
+       ORDER BY u.created_at DESC`
+    );
     
-    if (error) throw error;
-    
-    res.json(data);
+    res.json(result.rows);
 
   } catch (error) {
+    console.error('Database error:', error);
     res.status(500).json({ error: 'Failed to fetch users' });
   }
 });
 
-// Error handling middleware
+// Error handling
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
-// 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({ error: 'Endpoint not found' });
 });
@@ -240,5 +306,6 @@ app.use('*', (req, res) => {
 // Start server
 app.listen(PORT, () => {
   console.log(`✅ Server running on http://localhost:${PORT}`);
+  console.log(`📋 Connected to SDP database`);
   console.log(`📋 API Documentation: http://localhost:${PORT}`);
 });
