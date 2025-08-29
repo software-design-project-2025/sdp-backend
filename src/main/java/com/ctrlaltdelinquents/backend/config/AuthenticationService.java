@@ -10,10 +10,8 @@ import java.util.List;
 
 @Service
 public class AuthenticationService {
-
     //private final AppConfig appConfig;
     private final List<String> validApiKeys;
-
     public AuthenticationService(AppConfig appConfig) {
         //this.appConfig = appConfig;
         // Initialize in constructor instead

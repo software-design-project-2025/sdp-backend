@@ -18,6 +18,7 @@ import org.mockito.MockitoAnnotations;
 //import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 //import static org.junit.jupiter.api.Assertions.assertEquals;
 //import static org.mockito.Mockito.when;
+
 public class UserControllerTest {
     @Mock
     private UserRepo userRepo;
@@ -30,7 +31,9 @@ public class UserControllerTest {
         MockitoAnnotations.openMocks(this);
     }
 
+
     /**@Test
+
     @DisplayName("Check if there's only one user in the database")
     void checkIfThereIsOnlyOneUserInTheDatabase() {
         when(userRepo.findAll()).thenReturn(
@@ -40,4 +43,5 @@ public class UserControllerTest {
 
         assertThat(users).hasSize(1);
     }**/
+
 }
