@@ -11,9 +11,6 @@ import lombok.Setter;
 public class Module {
 
     @Id
-    @Column(name = "moduleid")
-    private int moduleId;
-
     @Column(name = "course_code")
     private String courseCode;
 

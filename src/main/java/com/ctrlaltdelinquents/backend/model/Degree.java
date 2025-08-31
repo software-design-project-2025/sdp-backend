@@ -19,11 +19,11 @@ public class Degree {
     @Column(name = "degreeid")
     private int degreeid;
 
-    @Column(name = "degreename")
-    private String degreename;
+    @Column(name = "degree_name")
+    private String degree_name;
 
-    @Column(name = "degreetype")
-    private String degreetype;
+    @Column(name = "degree_type")
+    private String degree_type;
 
     @ManyToOne
     @JoinColumn(name = "facultyid", referencedColumnName = "facultyid")
