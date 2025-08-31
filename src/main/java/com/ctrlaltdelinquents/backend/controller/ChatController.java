@@ -4,9 +4,7 @@ import com.ctrlaltdelinquents.backend.model.Chat;
 import com.ctrlaltdelinquents.backend.repo.ChatRepo;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +16,7 @@ import java.util.Optional;
 
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/chat")
 public class ChatController {
 
     @Autowired
@@ -29,15 +27,14 @@ public class ChatController {
     }
 
     // GET all chats
-    @GetMapping("/chat")  
+    @GetMapping("/getChat")  
     @ResponseBody
     public Optional<Chat> getChatsByUser(@RequestParam int userid) {
-
         return chatRepo.findById(userid);
     }
 
     // POST a new user
-    @PostMapping("/chat")
+    @PostMapping("/createChat")
     public Chat createChat(@RequestBody Chat chat) {
         return chatRepo.save(chat);
     }
