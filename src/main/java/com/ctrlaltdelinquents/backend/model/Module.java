@@ -15,5 +15,12 @@ public class Module {
     private String courseCode;
 
     @Column(name = "course_name")
-    private String courseName;
+    private String course_name;
+
+    @Column(name = "facultyid")
+    private int facultyid;
+
+//    @ManyToOne
+//    @JoinColumn(name = "facultyid")
+//    private Faculty facultyid;
 }

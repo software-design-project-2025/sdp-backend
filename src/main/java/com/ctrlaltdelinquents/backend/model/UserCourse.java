@@ -12,12 +12,10 @@ import lombok.Setter;
 public class UserCourse {
 
     @Id
-    @ManyToOne
-    @JoinColumn(name = "userid")
-    private User user;
+    @Column(name = "userid")
+    private int userid;
 
     @Id
-    @ManyToOne
-    @JoinColumn(name = "course_code")
-    private Module courseCode;
+    @Column(name = "course_code")
+    private String courseCode;
 }

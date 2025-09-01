@@ -4,8 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
 import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+//import jakarta.persistence.JoinColumn;
+//import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -25,7 +25,10 @@ public class Degree {
     @Column(name = "degree_type")
     private String degree_type;
 
-    @ManyToOne
-    @JoinColumn(name = "facultyid", referencedColumnName = "facultyid")
-    private Faculty faculty;
+    @Column(name = "facultyid")
+    private int facultyid;
+
+//    @ManyToOne
+//    @JoinColumn(name = "facultyid", referencedColumnName = "facultyid")
+//    private Faculty faculty;
 }
