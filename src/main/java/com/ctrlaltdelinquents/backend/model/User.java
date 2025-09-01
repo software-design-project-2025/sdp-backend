@@ -1,4 +1,3 @@
-// src/main/java/com/ctrlaltdelinquents/backend/model/User.java
 package com.ctrlaltdelinquents.backend.model;
 
 import jakarta.persistence.*;
