@@ -9,16 +9,17 @@ import lombok.Setter;
 @Entity
 @Table(name = "module")
 public class Module {
-
     @Id
     @Column(name = "course_code")
     private String courseCode;
 
     @Column(name = "course_name")
-    private String course_name;
+    private String courseName;
 
     @Column(name = "facultyid")
-    private int facultyid;
+    @JoinColumn(name = "facultyid")
+    private String facultyId;
+
 
 //    @ManyToOne
 //    @JoinColumn(name = "facultyid")
