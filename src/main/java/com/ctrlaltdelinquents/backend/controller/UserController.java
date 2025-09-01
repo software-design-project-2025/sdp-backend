@@ -56,4 +56,29 @@ public class UserController {
             return ResponseEntity.status(404).body(response);
         }
     }
+
+    @GetMapping("/subjects/{id}")
+    public ResponseEntity<?> getUserSubjects(@PathVariable int id) {
+        List<String> optionalUserCourse = userCourseRepository.findCourseCodesByUserId(id);
+        List<Map<String, String>> subjects = new ArrayList<>();
+
+        if(optionalUserCourse == null && optionalUserCourse.isEmpty()) {
+            Map<String, String> response = new HashMap<>();
+            response.put("error", "No subjects found for user with id " + id);
+            return ResponseEntity.status(404).body(response);
+        }
+
+        for(String courseCode : optionalUserCourse) {
+            Module module = moduleRepository.findByCourseCode(courseCode);
+
+            if(module != null) {
+                Map<String, String> subjectInfo = new HashMap<>();
+                subjectInfo.put("courseCode", courseCode);
+                subjectInfo.put("courseName", module.getCourseName());
+                subjects.add(subjectInfo);
+            }
+        }
+
+        return ResponseEntity.ok(subjects);
+    }
 }
