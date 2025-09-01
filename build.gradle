@@ -62,5 +62,3 @@ task printJavaVersion {
         println "Java version used by Gradle: ${System.getProperty('java.version')}"
     }
 }
-
-

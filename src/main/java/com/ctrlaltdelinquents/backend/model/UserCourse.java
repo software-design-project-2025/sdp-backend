@@ -8,16 +8,14 @@ import lombok.Setter;
 @Getter
 @Entity
 @Table(name = "user_course")
+@IdClass(UserCourseId.class)
 public class UserCourse {
 
     @Id
-    @Column(name = "user_courseid")
-    private int userCourseId;
+    @Column(name = "userid")
+    private int userid;
 
-    @ManyToOne
-    @JoinColumn(name = "userid")
-    private User user;
-
+    @Id
     @Column(name = "course_code")
     private String courseCode;
 }
