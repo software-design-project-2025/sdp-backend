@@ -11,12 +11,16 @@ import lombok.Setter;
 public class Module {
 
     @Id
-    @Column(name = "moduleid")
-    private int moduleId;
-
     @Column(name = "course_code")
     private String courseCode;
 
     @Column(name = "course_name")
-    private String courseName;
+    private String course_name;
+
+    @Column(name = "facultyid")
+    private int facultyid;
+
+//    @ManyToOne
+//    @JoinColumn(name = "facultyid")
+//    private Faculty facultyid;
 }
