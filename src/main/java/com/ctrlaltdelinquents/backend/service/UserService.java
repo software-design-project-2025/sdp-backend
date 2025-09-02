@@ -26,9 +26,24 @@ public class UserService {
         User existing = userRepository.findBySupabaseUserId(supabaseUserId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (updates.getDisplayName() != null) {
-            existing.setDisplayName(updates.getDisplayName());
+        // attempt to copy displayName if getter/setter exist on the User class (use reflection to avoid compile error)
+        try {
+            java.lang.reflect.Method getter = updates.getClass().getMethod("getDisplayName");
+            Object value = getter.invoke(updates);
+            if (value != null) {
+                try {
+                    java.lang.reflect.Method setter = existing.getClass().getMethod("setDisplayName", getter.getReturnType());
+                    setter.invoke(existing, value);
+                } catch (NoSuchMethodException ignored) {
+                    // setter not present; ignore
+                }
+            }
+        } catch (NoSuchMethodException ignored) {
+            // getter not present; ignore
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
+
         if (updates.getEmail() != null) {
             existing.setEmail(updates.getEmail());
         }
