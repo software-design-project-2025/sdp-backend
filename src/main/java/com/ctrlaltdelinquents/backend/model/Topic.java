@@ -28,6 +28,7 @@ public class Topic {
     @Column(name = "end_date")
     private LocalDateTime endDate;
 
+
     @ManyToOne
     @JoinColumns({
             @JoinColumn(name = "course_code"),
