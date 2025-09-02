@@ -28,10 +28,10 @@ public class UserController {
     private DegreeRepository degreeRepository;
     
     @Autowired
-    private UserCourseRepository userCourseRepository;
+    UserCourseRepository userCourseRepository;
     
     @Autowired
-    private ModuleRepository moduleRepository;
+    ModuleRepository moduleRepository;
 
     public UserController(UserService userService, UserRepo userRepo) {
         this.userService = userService;

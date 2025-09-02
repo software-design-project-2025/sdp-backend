@@ -31,5 +31,4 @@ public class UserCourseController {
             return ResponseEntity.ok(response);
         }
     }
-
 }
