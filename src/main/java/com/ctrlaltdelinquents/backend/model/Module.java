@@ -19,8 +19,6 @@ public class Module {
     @Column(name = "facultyid")
     @JoinColumn(name = "facultyid")
     private String facultyId;
-
-
 //    @ManyToOne
 //    @JoinColumn(name = "facultyid")
 //    private Faculty facultyid;

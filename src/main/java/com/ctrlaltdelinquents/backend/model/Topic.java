@@ -13,10 +13,10 @@ import java.time.LocalDateTime;
 public class Topic {
 
     @Id
-    @Column(name = "topic")
+    @Column(name = "topicid")
     private int topicId;
 
-    @Column(name = "topic_name")
+    @Column(name = "title")
     private String topicName;
 
     @Column(name = "description")
@@ -29,6 +29,9 @@ public class Topic {
     private LocalDateTime endDate;
 
     @ManyToOne
-    @JoinColumn(name = "course_code")
+    @JoinColumns({
+            @JoinColumn(name = "course_code"),
+            @JoinColumn(name = "userid")
+    })
     private UserCourse userCourse;
 }
