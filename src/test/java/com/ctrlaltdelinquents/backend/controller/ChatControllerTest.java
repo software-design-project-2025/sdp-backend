@@ -4,6 +4,7 @@ import com.ctrlaltdelinquents.backend.model.Chat;
 import com.ctrlaltdelinquents.backend.model.User;
 import com.ctrlaltdelinquents.backend.repo.ChatRepo;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -24,6 +25,7 @@ class ChatControllerTest {
     }
 
     @Test
+    @DisplayName("Should return chat when chat with given id exists")
     void getChatsByUser_returnsChat_whenChatExists() {
         User user1 = new User();
         user1.setUserid(1);
@@ -47,6 +49,7 @@ class ChatControllerTest {
     }
 
     @Test
+    @DisplayName("Should return empty when chat with given id does not exist")
     void getChatsByUser_returnsEmpty_whenChatDoesNotExist() {
         when(chatRepo.findById(99)).thenReturn(Optional.empty());
 
@@ -57,6 +60,7 @@ class ChatControllerTest {
     }
 
     @Test
+    @DisplayName("Should save and return chat when creating new chat")
     void createChat_savesAndReturnsChat() {
         User user1 = new User();
         user1.setUserid(1);
@@ -79,6 +83,7 @@ class ChatControllerTest {
     }
 
     @Test
+    @DisplayName("Should pass correct entity to repository when saving chat")
     void createChat_passesCorrectEntityToRepo() {
         User user1 = new User();
         user1.setUserid(5);
