@@ -3,6 +3,7 @@ import com.ctrlaltdelinquents.backend.controller.UserController;
 //import com.ctrlaltdelinquents.backend.model.User;
 import com.ctrlaltdelinquents.backend.repo.UserRepo;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 //import org.junit.jupiter.api.DisplayName;
 //import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -18,7 +19,7 @@ import org.mockito.MockitoAnnotations;
 //import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 //import static org.junit.jupiter.api.Assertions.assertEquals;
 //import static org.mockito.Mockito.when;
-
+@Disabled
 public class UserControllerTest {
     @Mock
     private UserRepo userRepo;

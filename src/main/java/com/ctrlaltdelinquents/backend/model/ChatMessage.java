@@ -23,7 +23,7 @@ public class ChatMessage {
     @JoinColumn(name = "senderid", referencedColumnName = "userid")
     private User sender;
 
-    @Column(name = "sent_date_time")
+    @Column(name = "sent_datetime")
     private LocalDateTime sentDateTime;
 
     @Column(name = "message", columnDefinition = "TEXT")

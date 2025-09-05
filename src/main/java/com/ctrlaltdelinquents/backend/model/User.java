@@ -15,25 +15,22 @@ public class User {
 
     @Id
     @Column(name = "userid")  
-    private int userid;
-
-    @Column(name = "username")
-    private String username;
-
-    @Column(name = "password")
-    private String password;
-
-    @Column(name = "email")
-    private String email;
+    private String userid;
 
     @Column(name = "role")
     private String role;
 
-    @Column(name = "is_active")
-    private boolean is_active;
+    @Column(name = "degreeid")
+    private String degreeid;
+
+    @Column(name = "yearofstudy")
+    private int yearofstudy;
 
     @Column(name = "bio")
     private String bio;
+
+    @Column(name = "status")
+    private String status;
 
     @Column(name = "profile_picture")  
     private String profile_picture;
