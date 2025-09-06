@@ -12,8 +12,9 @@ import java.time.LocalDateTime;
 public class ChatMessage {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-increment
     @Column(name = "messageid")
-    private int messageid;
+    private Integer messageid;
 
     @ManyToOne
     @JoinColumn(name = "chatid", referencedColumnName = "chatid")
