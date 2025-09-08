@@ -10,31 +10,28 @@ import lombok.Setter;
 @Setter
 @Getter
 @Entity
-@Table(name = "\"user\"")  
+@Table(name = "\"user\"")
 public class User {
 
     @Id
-    @Column(name = "userid")  
+    @Column(name = "userid")
     private int userid;
-
-    @Column(name = "username")
-    private String username;
-
-    @Column(name = "password")
-    private String password;
-
-    @Column(name = "email")
-    private String email;
 
     @Column(name = "role")
     private String role;
 
-    @Column(name = "is_active")
-    private boolean is_active;
+    @Column(name = "degreeid")
+    private String degreeid;
+
+    @Column(name = "yearofstudy")
+    private String yearofstudy;
 
     @Column(name = "bio")
     private String bio;
 
-    @Column(name = "profile_picture")  
+    @Column(name = "status")
+    private String status;
+
+    @Column(name = "profile_picture")
     private String profile_picture;
 }

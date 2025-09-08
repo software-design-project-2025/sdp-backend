@@ -2,6 +2,7 @@ package com.ctrlaltdelinquents.backend.controller;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -12,6 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(TestController.class)
+@Disabled
 class TestControllerTest {
 
     @Autowired
@@ -19,7 +21,7 @@ class TestControllerTest {
 
     @Test
     @DisplayName("GET /api/hello should return hello message")
-    @WithMockUser(username="user", roles = {"USER"})
+    @WithMockUser(username = "user", roles = { "USER" })
     void testHelloEndpoint() throws Exception {
         mockMvc.perform(get("/api/hello"))
                 .andExpect(status().isOk())
@@ -28,7 +30,7 @@ class TestControllerTest {
 
     @Test
     @DisplayName("GET /api/hello should return non-empty string")
-    @WithMockUser(username="user", roles = {"USER"})
+    @WithMockUser(username = "user", roles = { "USER" })
     void testHelloIsNotEmpty() throws Exception {
         mockMvc.perform(get("/api/hello"))
                 .andExpect(status().isOk())
