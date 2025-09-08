@@ -2,17 +2,13 @@ package com.ctrlaltdelinquents.backend.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-@Component
-@ConfigurationProperties(prefix = "app")
-public class AppConfig {
-    
-    private String apiKey;
+import lombok.Getter;
+import lombok.Setter;
 
-    public String getApiKey() {
-        return apiKey;
-    }
-    
-    public void setApiKey(String apiKey) {
-        this.apiKey = apiKey;
-    }
+@Component
+@Getter
+@Setter
+@ConfigurationProperties(prefix = "app") //Loads properties from application.properties that have an "app" prefix
+public class AppConfig {
+    private String apiKey; //Gives access to API Key from .env through application.properties
 }

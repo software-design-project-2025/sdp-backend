@@ -9,7 +9,7 @@ public class User {
     
     @Id
     @Column(name = "userid")
-    private int userid;
+    private String userid;
 
     @Column(name = "username")
     private String username;
@@ -23,8 +23,11 @@ public class User {
     @Column(name = "role")
     private String role;
 
-    @Column(name = "is_active")
-    private boolean is_active;
+    @Column(name = "degreeid")
+    private String degreeid;
+
+    @Column(name = "yearofstudy")
+    private int yearofstudy;
 
     @Column(name = "bio")
     private String bio;
@@ -41,13 +44,13 @@ public class User {
 
     public User() {}
 
-    public User(int userid, String username, String password, String email, String role) {
+    public User(String userid, String username, String password, String email, String role) {
         this.userid = userid;
         this.username = username;
         this.password = password;
         this.email = email;
         this.role = role;
-        this.is_active = true;
+        //this.is_active = true;
         this.createdAt = LocalDateTime.now();
     }
     
@@ -56,13 +59,13 @@ public class User {
         this.supabaseUserId = supabaseUserId;
         this.email = email;
         this.username = displayName;
-        this.is_active = true;
+        //this.is_active = true;
         this.createdAt = LocalDateTime.now();
     }
     
 
-    public int getUserid() { return userid; }
-    public void setUserid(int userid) { this.userid = userid; }
+    public String getUserid() { return userid; }
+    public void setUserid(String userid) { this.userid = userid; }
     
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
@@ -76,8 +79,8 @@ public class User {
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
     
-    public boolean isIs_active() { return is_active; }
-    public void setIs_active(boolean is_active) { this.is_active = is_active; }
+    //public boolean isIs_active() { return is_active; }
+    //public void setIs_active(boolean is_active) { this.is_active = is_active; }
     
     public String getBio() { return bio; }
     public void setBio(String bio) { this.bio = bio; }

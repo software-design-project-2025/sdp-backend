@@ -10,11 +10,9 @@ import java.util.List;
 
 @Service
 public class AuthenticationService {
-    //private final AppConfig appConfig;
+
     private final List<String> validApiKeys;
     public AuthenticationService(AppConfig appConfig) {
-        //this.appConfig = appConfig;
-        // Initialize in constructor instead
         this.validApiKeys = List.of(appConfig.getApiKey());
     }
 
@@ -23,12 +21,12 @@ public class AuthenticationService {
         // Extract token from request
         String token = extractToken(request);
         
-        if (token != null && validateToken(token)) {
+        if (token != null && validateToken(token)) { //validateToken called to check if token/key exists in List of API Keys
             // Parse token and create authentication object
             String username = parseUsernameFromToken(token);
-            List<SimpleGrantedAuthority> authorities = parseAuthoritiesFromToken(token);
+            List<SimpleGrantedAuthority> authorities = parseAuthoritiesFromToken(token); // Represents what a user is allowed to do in the application.
             
-            return new UsernamePasswordAuthenticationToken(username, null, authorities);
+            return new UsernamePasswordAuthenticationToken(username, null, authorities); //Returns Authentication object. Tells us who the user is and what they're allowed to do after they've been verified.
         }
         
         throw new RuntimeException("Unauthorized: Invalid API key");

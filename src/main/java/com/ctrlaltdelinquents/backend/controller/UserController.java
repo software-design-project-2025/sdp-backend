@@ -2,10 +2,8 @@ package com.ctrlaltdelinquents.backend.controller;
 
 import com.ctrlaltdelinquents.backend.model.Module;
 import com.ctrlaltdelinquents.backend.model.User;
-import com.ctrlaltdelinquents.backend.model.UserCourse;
 import com.ctrlaltdelinquents.backend.repo.*;
 import com.ctrlaltdelinquents.backend.service.UserService;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,11 +19,11 @@ public class UserController {
     @Autowired
     private final UserRepo userRepo;
     
-    @Autowired
-    private FacultyRepository facultyRepository;
+    //@Autowired
+    //private FacultyRepository facultyRepository;
     
-    @Autowired
-    private DegreeRepository degreeRepository;
+    //@Autowired
+    //private DegreeRepository degreeRepository;
     
     @Autowired
     UserCourseRepository userCourseRepository;
