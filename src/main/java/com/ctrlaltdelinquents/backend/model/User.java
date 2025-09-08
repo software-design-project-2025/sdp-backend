@@ -24,11 +24,7 @@ public class User {
     private String degreeid;
 
     @Column(name = "yearofstudy")
-
-    private String yearofstudy;
-
     private int yearofstudy;
-
 
     @Column(name = "bio")
     private String bio;
@@ -57,10 +53,10 @@ public class User {
         this.supabaseUserId = supabaseUserId;
         this.email = email;
         this.username = displayName;
+        //this.is_active = true;
         this.createdAt = LocalDateTime.now();
     }
-  
-  
+    
     public String getUserid() { return userid; }
     public void setUserid(String userid) { this.userid = userid; }
     
