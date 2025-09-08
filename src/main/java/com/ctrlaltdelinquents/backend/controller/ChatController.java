@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Optional;
+//import java.util.Optional;
+import java.util.List;
 
 
 @RestController
@@ -29,8 +30,8 @@ public class ChatController {
     // GET all chats
     @GetMapping("/getChat")  
     @ResponseBody
-    public Optional<Chat> getChatsByUser(@RequestParam int userid) {
-        return chatRepo.findById(userid);
+    public List<Chat> getChatsByUser(@RequestParam String userid) {
+        return chatRepo.findByUser(userid);
     }
 
     // POST a new user
@@ -39,5 +40,3 @@ public class ChatController {
         return chatRepo.save(chat);
     }
 }
-    
-

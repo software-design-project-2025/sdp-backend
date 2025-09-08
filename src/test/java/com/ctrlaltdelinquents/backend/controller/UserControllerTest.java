@@ -9,7 +9,6 @@ import com.ctrlaltdelinquents.backend.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -69,7 +68,7 @@ class UserControllerTest {
 
         ResponseEntity<User> response = userController.getUserBySupabaseId("unknown");
 
-        assertThat(response.getStatusCodeValue()).isEqualTo(404);
+        assertThat(response.getStatusCode().value()).isEqualTo(404);
     }
 
     @Test
@@ -89,7 +88,7 @@ class UserControllerTest {
     void deleteUserBySupabaseId_returnsNoContent() {
         ResponseEntity<Void> response = userController.deleteUserBySupabaseId("supabase123");
 
-        assertThat(response.getStatusCodeValue()).isEqualTo(204);
+        assertThat(response.getStatusCode().value()).isEqualTo(204);
         verify(userService, times(1)).deleteUser("supabase123");
     }
 
@@ -124,13 +123,13 @@ class UserControllerTest {
 
         ResponseEntity<?> response = userController.getUserById(99);
 
-        assertThat(response.getStatusCodeValue()).isEqualTo(404);
+        assertThat(response.getStatusCode().value()).isEqualTo(404);
     }
 
     @Test
     @DisplayName("Should return user subjects if they exist")
     void getUserSubjects_returnsSubjects() {
-        String userId = "1";
+        //String userId = "1";
         when(userCourseRepository.findCourseCodesByUserId(1)).thenReturn(List.of("CS101"));
         Module module = new Module();
         module.setCourseCode("CS101");
@@ -150,6 +149,6 @@ class UserControllerTest {
 
         ResponseEntity<?> response = userController.getUserSubjects(1);
 
-        assertThat(response.getStatusCodeValue()).isEqualTo(404);
+        assertThat(response.getStatusCode().value()).isEqualTo(404);
     }
 }
