@@ -34,6 +34,6 @@ class TestControllerTest {
     void testHelloIsNotEmpty() throws Exception {
         mockMvc.perform(get("/api/hello"))
                 .andExpect(status().isOk())
-                .andExpect(content().string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.isEmptyOrNullString())));
+                .andExpect(content().string(org.hamcrest.Matchers.not(org.hamcrest.Matchers.blankString())));
     }
 }
