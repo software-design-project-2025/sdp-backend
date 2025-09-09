@@ -1,4 +1,4 @@
-package com.ctrlaltdelinquents.backend.controller;
+/*package com.ctrlaltdelinquents.backend.controller;
 
 import com.ctrlaltdelinquents.backend.model.Chat;
 import com.ctrlaltdelinquents.backend.model.User;
@@ -14,7 +14,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 @Disabled
-class ChatControllerTest {
+class ChatControllerTest { 
 
     private ChatRepo chatRepo;
     private ChatController chatController;
@@ -46,7 +46,7 @@ class ChatControllerTest {
         assertThat(result.get().getChatid()).isEqualTo(10);
         assertThat(result.get().getUser1().getUserid()).isEqualTo(1);
         assertThat(result.get().getUser2().getUserid()).isEqualTo(2);
-        verify(chatRepo, times(1)).findById(10);*/
+        verify(chatRepo, times(1)).findById(10);
     }
 
     @Test
@@ -108,4 +108,4 @@ class ChatControllerTest {
         assertThat(captured.getUser1().getUserid()).isEqualTo(5);
         assertThat(captured.getUser2().getUserid()).isEqualTo(6);
     }
-}
+}*/
