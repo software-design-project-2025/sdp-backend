@@ -21,10 +21,10 @@ public class Session {
     private String title;
 
     @Column(name = "start_time")
-    private LocalDateTime startTime;
+    private LocalDateTime start_time;
 
     @Column(name = "end_time")
-    private LocalDateTime endTime;
+    private LocalDateTime end_time;
 
     @Column(name = "status")
     private String status;
@@ -35,12 +35,9 @@ public class Session {
     @Column(name = "description")
     private String description;
 
-    // This should be a simple String reference, not a ManyToOne relationship
-    // since creatorid is just a TEXT field in the database
-    @Column(name = "creatorid")
-    private String creatorId;
+    @JoinColumn(name = "creatorid")
+    private String creatorid;
 
-    // This should also be a simple Integer reference
-    @Column(name = "groupid")
-    private Integer groupId;
+    @JoinColumn(name = "groupid")
+    private int groupid;
 }
