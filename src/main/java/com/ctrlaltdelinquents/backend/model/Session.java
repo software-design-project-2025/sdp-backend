@@ -16,11 +16,17 @@ public class Session {
     @Column(name = "sessionid")
     private int sessionId;
 
+    @Column
+    private String title;
+
     @Column(name = "start_time")
-    private LocalDateTime startTime;
+    private LocalDateTime start_time;
 
     @Column(name = "end_time")
-    private LocalDateTime endTime;
+    private LocalDateTime end_time;
+
+    @Column
+    private String status;
 
     @Column(name = "location")
     private String location;
@@ -28,11 +34,9 @@ public class Session {
     @Column(name = "description")
     private String description;
 
-    @ManyToOne
     @JoinColumn(name = "creatorid")
-    private User creator;
+    private String creatorid;
 
-    @ManyToOne
     @JoinColumn(name = "groupid")
-    private Group group;
+    private int groupid;
 }

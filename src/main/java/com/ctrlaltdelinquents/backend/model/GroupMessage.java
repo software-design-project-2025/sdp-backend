@@ -13,18 +13,16 @@ public class GroupMessage {
 
     @Id
     @Column(name = "messageid")
-    private int messageId;
+    private int messageid;
 
-    @ManyToOne
-    @JoinColumn(name = "groupid", referencedColumnName = "groupid")
-    private Group group;
+    @JoinColumn(name = "groupid")
+    private int groupid;
 
-    @Column(name = "sent_date_time")
-    private LocalDateTime sentDateTime;
+    @Column(name = "sent_datetime")
+    private LocalDateTime sent_datetime;
 
-    @ManyToOne
-    @JoinColumn(name = "senderid", referencedColumnName = "userid")
-    private User sender;
+    @JoinColumn(name = "senderid")
+    private String senderid;
 
     @Column(name = "message")
     private String message;

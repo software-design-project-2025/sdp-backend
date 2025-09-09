@@ -19,4 +19,5 @@ public class Faculty {
 
     @Column(name = "faculty_name")
     private String faculty_name;
+
 }

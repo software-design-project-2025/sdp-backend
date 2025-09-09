@@ -8,24 +8,22 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @Entity
-@Table(name = "chatdoc")
+@Table(name = "chat_doc")
 public class ChatDoc {
 
     @Id
     @Column(name = "docid")
     private int docid;
 
-    @ManyToOne
-    @JoinColumn(name = "chatid", referencedColumnName = "chatid")
-    private Chat chat;
+    @JoinColumn(name = "chatid")
+    private int chatid;
 
-    @ManyToOne
-    @JoinColumn(name = "senderid", referencedColumnName = "userid")
-    private User sender;
+    @JoinColumn(name = "senderid")
+    private String senderid;
 
-    @Column(name = "sent_date_time")
-    private LocalDateTime sentDateTime;
+    @Column(name = "sent_datetime")
+    private LocalDateTime sent_datetime;
 
-    @Column(name = "doc", length = 255)
+    @Column(name = "doc")
     private String doc;
 }

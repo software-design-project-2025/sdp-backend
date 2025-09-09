@@ -4,8 +4,7 @@ import com.ctrlaltdelinquents.backend.model.Module;
 import com.ctrlaltdelinquents.backend.model.User;
 import com.ctrlaltdelinquents.backend.repo.ModuleRepository;
 import com.ctrlaltdelinquents.backend.repo.UserCourseRepository;
-import com.ctrlaltdelinquents.backend.repo.UserRepo;
-import com.ctrlaltdelinquents.backend.service.UserService;
+import com.ctrlaltdelinquents.backend.repo.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,7 +20,7 @@ import static org.mockito.Mockito.*;
 class UserCourseControllerTest {
 
     private UserService userService;
-    private UserRepo userRepo;
+    private UserRepository userRepo;
     private UserCourseRepository userCourseRepository;
     private ModuleRepository moduleRepository;
     private UserController userController;
@@ -29,7 +28,7 @@ class UserCourseControllerTest {
     @BeforeEach
     void setUp() {
         userService = mock(UserService.class);
-        userRepo = mock(UserRepo.class);
+        userRepo = mock(UserRepository.class);
         userCourseRepository = mock(UserCourseRepository.class);
         moduleRepository = mock(ModuleRepository.class);
 
