@@ -7,4 +7,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ChatRepo extends JpaRepository<Chat, Integer> {
+    
+    @Query("SELECT c FROM Chat c WHERE c.user1.userid = :userid OR c.user2.userid = :userid")
+    List<Chat> findByUser(@Param("userid") String userid);
 }

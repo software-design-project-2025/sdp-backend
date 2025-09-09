@@ -1,4 +1,4 @@
-/*package com.ctrlaltdelinquents.backend.controller;
+package com.ctrlaltdelinquents.backend.controller;
 
 import com.ctrlaltdelinquents.backend.model.Faculty;
 import com.ctrlaltdelinquents.backend.repo.FacultyRepo;
@@ -93,4 +93,4 @@ class FacultyControllerTest {
         assertThat(result).allMatch(Objects::nonNull);
         assertThat(result.get(0).getFaculty_name()).isEqualTo("Business");
     }
-}*/
+}
