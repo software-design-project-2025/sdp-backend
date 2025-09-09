@@ -13,3 +13,4 @@ public interface UserCourseRepository extends JpaRepository<UserCourse, UserCour
     @Query(value = "SELECT course_code FROM user_course WHERE userid = :userid", nativeQuery = true)
     List<String> findCourseCodesByUserId(@Param("userid") int userid);
 }
+//

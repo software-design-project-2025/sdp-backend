@@ -14,16 +14,16 @@ import java.util.List;
 @RequestMapping("/api/module")
 public class ModuleController {
 
-    @Autowired
-    private final ModuleRepo moduleRepo;
+   @Autowired
+   private final ModuleRepo moduleRepo;
 
-    public ModuleController(ModuleRepo moduleRepo) {this.moduleRepo = moduleRepo;}
+   public ModuleController(ModuleRepo moduleRepo) {this.moduleRepo = moduleRepo;}
 
-    // GET all modules
-    @GetMapping("/all")
-    public List<Module> getAllModule() {
-        return moduleRepo.findAll();
-    }
+   // GET all modules
+   @GetMapping("/all")
+   public List<Module> getAllModule() {
+       return moduleRepo.findAll();
+   }
 
 //    // GET module by id
 //    @GetMapping("/")

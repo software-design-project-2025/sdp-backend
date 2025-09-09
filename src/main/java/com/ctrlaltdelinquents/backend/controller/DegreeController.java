@@ -13,15 +13,14 @@ import java.util.List;
 @RequestMapping("/api/degree")
 public class DegreeController {
 
-    @Autowired
-    private final DegreeRepo degreeRepo;
+   @Autowired
+   private final DegreeRepo degreeRepo;
 
-    public DegreeController(DegreeRepo degreeRepo) {this.degreeRepo = degreeRepo;}
+   public DegreeController(DegreeRepo degreeRepo) {this.degreeRepo = degreeRepo;}
 
-    // GET all degrees
-    @GetMapping("/all")
-    public List<Degree> getAllDegree() {
-        return degreeRepo.findAll();
-    }
-
+   // GET all degrees
+   @GetMapping("/all")
+   public List<Degree> getAllDegree() {
+       return degreeRepo.findAll();
+   }
 }

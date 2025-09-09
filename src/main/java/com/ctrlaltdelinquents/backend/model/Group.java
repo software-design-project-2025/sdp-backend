@@ -14,16 +14,15 @@ public class Group {
     @Column(name = "groupid")
     private int groupid;
 
-    @Column(name = "title", length = 255)
+    @Column(name = "title")
     private String title;
 
-    @Column(name = "goal", columnDefinition = "TEXT")
+    @Column(name = "goal")
     private String goal;
 
     @Column(name = "active")
     private boolean active;
 
-    @ManyToOne
-    @JoinColumn(name = "creatorid", referencedColumnName = "userid")
-    private User creator;
+    @JoinColumn(name = "creatorid")
+    private String creatorid;
 }

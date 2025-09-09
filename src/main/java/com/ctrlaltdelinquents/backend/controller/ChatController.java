@@ -20,23 +20,23 @@ import java.util.List;
 @RequestMapping("/api/chat")
 public class ChatController {
 
-    @Autowired
-    private final ChatRepo chatRepo;
+   @Autowired
+   private final ChatRepo chatRepo;
 
-    public ChatController(ChatRepo chatRepo) {
-        this.chatRepo = chatRepo;
-    }
+   public ChatController(ChatRepo chatRepo) {
+       this.chatRepo = chatRepo;
+   }
 
-    // GET all chats
-    @GetMapping("/getChat")  
-    @ResponseBody
-    public List<Chat> getChatsByUser(@RequestParam String userid) {
-        return chatRepo.findByUser(userid);
-    }
+   // GET all chats
+   @GetMapping("/getChat")
+   @ResponseBody
+   public List<Chat> getChatsByUser(@RequestParam String userid) {
+       return chatRepo.findByUser(userid);
+   }
 
-    // POST a new user
-    @PostMapping("/createChat")
-    public Chat createChat(@RequestBody Chat chat) {
-        return chatRepo.save(chat);
-    }
+   // POST a new user
+   @PostMapping("/createChat")
+   public Chat createChat(@RequestBody Chat chat) {
+       return chatRepo.save(chat);
+   }
 }

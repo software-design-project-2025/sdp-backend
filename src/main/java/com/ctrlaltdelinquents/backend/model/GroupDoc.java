@@ -15,17 +15,15 @@ public class GroupDoc {
     @Column(name = "docid")
     private int docid;
 
-    @ManyToOne
-    @JoinColumn(name = "groupid", referencedColumnName = "groupid")
-    private Group group;
+    @JoinColumn(name = "groupid")
+    private int groupid;
 
-    @Column(name = "sent_date_time")
-    private LocalDateTime sentDateTime;
+    @Column(name = "sent_datetime")
+    private LocalDateTime sent_datetime;
 
-    @ManyToOne
-    @JoinColumn(name = "senderid", referencedColumnName = "userid")
-    private User sender;
+    @JoinColumn(name = "senderid")
+    private String senderid;
 
-    @Column(name = "doc", length = 255)
+    @Column(name = "doc")
     private String doc;
 }
