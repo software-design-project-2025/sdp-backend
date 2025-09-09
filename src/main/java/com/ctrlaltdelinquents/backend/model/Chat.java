@@ -15,10 +15,10 @@ public class Chat {
     private int chatid;
 
     @ManyToOne
-    @JoinColumn(name = "user1id", referencedColumnName = "userid")
+    @JoinColumn(name = "user1id")  // matches DB column
     private User user1;
 
     @ManyToOne
-    @JoinColumn(name = "user2id", referencedColumnName = "userid")
+    @JoinColumn(name = "user2id")  // matches DB column
     private User user2;
 }

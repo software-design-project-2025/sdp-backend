@@ -13,26 +13,26 @@ import java.time.LocalDateTime;
 public class Topic {
 
     @Id
-    @Column(name = "topicid")
-    private int topicId;
+    private int topicid;
 
-    @Column(name = "title")
-    private String topicName;
+    @JoinColumn(name = "userid")
+    private String userid;
 
-    @Column(name = "description")
+    @Column
+    private String title;
+
+    @Column
     private String description;
 
-    @Column(name = "start_date")
-    private LocalDateTime startDate;
+    @Column
+    private LocalDateTime start_date;
 
-    @Column(name = "end_date")
-    private LocalDateTime endDate;
+    @Column
+    private LocalDateTime end_date;
 
+    @Column
+    private String status;
 
-    @ManyToOne
-    @JoinColumns({
-            @JoinColumn(name = "course_code"),
-            @JoinColumn(name = "userid")
-    })
-    private UserCourse userCourse;
+    @JoinColumn(name = "course_code")
+    private String course_code;
 }

@@ -13,15 +13,15 @@ import java.util.List;
 @RequestMapping("/api/faculty")
 public class FacultyController {
 
-    @Autowired
-    private final FacultyRepo facultyRepo;
+   @Autowired
+   private final FacultyRepo facultyRepo;
 
-    public FacultyController(FacultyRepo facultyRepo) {this.facultyRepo = facultyRepo;}
+   public FacultyController(FacultyRepo facultyRepo) {this.facultyRepo = facultyRepo;}
 
-    // GET all faculties
-    @GetMapping("/all")
-    public List<Faculty> getAllFaculty() {
-        return facultyRepo.findAll();
-    }
+   // GET all faculties
+   @GetMapping("/all")
+   public List<Faculty> getAllFaculty() {
+       return facultyRepo.findAll();
+   }
 
 }

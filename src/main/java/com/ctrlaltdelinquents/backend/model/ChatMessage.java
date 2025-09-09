@@ -16,17 +16,15 @@ public class ChatMessage {
     @Column(name = "messageid")
     private Integer messageid;
 
-    @ManyToOne
-    @JoinColumn(name = "chatid", referencedColumnName = "chatid")
-    private Chat chat;
+    @JoinColumn(name = "chatid")
+    private Integer chatid;
 
-    @ManyToOne
-    @JoinColumn(name = "senderid", referencedColumnName = "userid")
-    private User sender;
+    @JoinColumn(name = "senderid")
+    private String senderid;
 
     @Column(name = "sent_datetime")
-    private LocalDateTime sentDateTime;
+    private LocalDateTime sent_datetime;
 
-    @Column(name = "message", columnDefinition = "TEXT")
+    @Column(name = "message")
     private String message;
 }
