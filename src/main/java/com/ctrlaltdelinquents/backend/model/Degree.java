@@ -16,7 +16,6 @@ import lombok.Setter;
 public class Degree {
 
     @Id
-    @Column(name = "degreeid")
     private int degreeid;
 
     @Column(name = "degree_name")
@@ -27,8 +26,4 @@ public class Degree {
 
     @Column(name = "facultyid")
     private int facultyid;
-
-//    @ManyToOne
-//    @JoinColumn(name = "facultyid", referencedColumnName = "facultyid")
-//    private Faculty faculty;
 }

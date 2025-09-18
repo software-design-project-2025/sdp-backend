@@ -12,32 +12,31 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Optional;
+//import java.util.Optional;
+import java.util.List;
 
 
 @RestController
 @RequestMapping("/api/chat")
 public class ChatController {
 
-    @Autowired
-    private final ChatRepo chatRepo;
+   @Autowired
+   private final ChatRepo chatRepo;
 
-    public ChatController(ChatRepo chatRepo) {
-        this.chatRepo = chatRepo;
-    }
+   public ChatController(ChatRepo chatRepo) {
+       this.chatRepo = chatRepo;
+   }
 
     // GET all chats
     @GetMapping("/getChat")  
     @ResponseBody
-    public Optional<Chat> getChatsByUser(@RequestParam int userid) {
-        return chatRepo.findById(userid);
+    public List<Chat> getChatsByUser(@RequestParam String userid) {
+        return chatRepo.findByUser(userid);
     }
 
-    // POST a new user
-    @PostMapping("/createChat")
-    public Chat createChat(@RequestBody Chat chat) {
-        return chatRepo.save(chat);
-    }
+   // POST a new user
+   @PostMapping("/createChat")
+   public Chat createChat(@RequestBody Chat chat) {
+       return chatRepo.save(chat);
+   }
 }
-    
-
