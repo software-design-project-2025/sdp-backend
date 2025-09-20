@@ -11,6 +11,6 @@ import java.util.List;
 
 public interface UserCourseRepository extends JpaRepository<UserCourse, UserCourseId> {
     @Query(value = "SELECT course_code FROM user_course WHERE userid = :userid", nativeQuery = true)
-    List<String> findCourseCodesByUserId(@Param("userid") int userid);
+    List<String> findCourseCodesByUserId(@Param("userid") String userid);
 }
 //
