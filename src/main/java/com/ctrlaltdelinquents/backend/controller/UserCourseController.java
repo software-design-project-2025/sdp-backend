@@ -17,7 +17,7 @@ public class UserCourseController {
    private UserCourseRepository userCourseRepository;
 
    @GetMapping("/{id}")
-   public ResponseEntity<?> getAllUserCourses(@PathVariable int id) {
+   public ResponseEntity<?> getAllUserCourses(@PathVariable String id) {
        List<String> courses = userCourseRepository.findCourseCodesByUserId(id);
 
        if (courses == null || courses.isEmpty()) {
