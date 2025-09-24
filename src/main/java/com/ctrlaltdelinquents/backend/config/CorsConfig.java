@@ -19,7 +19,7 @@ public class CorsConfig {
         // Allow specific origins
         configuration.setAllowedOrigins(Arrays.asList(
             "http://localhost:4200",
-            "https://ambitious-sand-0f3b82603.1.azurestaticapps.net"
+            "https://witty-coast-007353203.1.azurestaticapps.net"
         ));
         
         // Allow all HTTP methods
