@@ -1,7 +1,8 @@
 package com.ctrlaltdelinquents.backend.controller;
-
+import com.ctrlaltdelinquents.backend.model.UserCourse;
 import com.ctrlaltdelinquents.backend.repo.UserCourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,7 +18,7 @@ public class UserCourseController {
    private UserCourseRepository userCourseRepository;
 
    @GetMapping("/{id}")
-   public ResponseEntity<?> getAllUserCourses(@PathVariable int id) {
+   public ResponseEntity<?> getAllUserCourses(@PathVariable String id) {
        List<String> courses = userCourseRepository.findCourseCodesByUserId(id);
 
        if (courses == null || courses.isEmpty()) {
@@ -30,4 +31,22 @@ public class UserCourseController {
            return ResponseEntity.ok(response);
        }
    }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllUsersCourses() {
+        try {
+            List<UserCourse> userCourses = userCourseRepository.findAll();
+
+            if (userCourses.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Error: No user courses found");
+            } else {
+                return ResponseEntity.ok(userCourses);
+            }
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error: Failed to fetch user courses" + e.getMessage());
+        }
+    }
 }
