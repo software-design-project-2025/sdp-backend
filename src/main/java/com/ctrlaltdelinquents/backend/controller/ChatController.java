@@ -27,12 +27,12 @@ public class ChatController {
        this.chatRepo = chatRepo;
    }
 
-   // GET all chats
-   @GetMapping("/getChat")
-   @ResponseBody
-   public List<Chat> getChatsByUser(@RequestParam String userid) {
-       return chatRepo.findByUser(userid);
-   }
+    // GET all chats
+    @GetMapping("/getChat")  
+    @ResponseBody
+    public List<Chat> getChatsByUser(@RequestParam String userid) {
+        return chatRepo.findByUser(userid);
+    }
 
    // POST a new user
    @PostMapping("/createChat")
