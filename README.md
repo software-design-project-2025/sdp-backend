@@ -1,3 +1,4 @@
+
 # Auth API
 
 A simple authentication API built with Node.js, Express, and PostgreSQL.
@@ -24,3 +25,6 @@ Express
 PostgreSQL
 JWT
 bcrypt
+
+[![codecov](https://codecov.io/github/software-design-project-2025/sdp-backend/branch/testing/graph/badge.svg?token=4EF06CDYUG)](https://codecov.io/github/software-design-project-2025/sdp-backend)
+

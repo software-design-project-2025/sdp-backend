@@ -21,17 +21,14 @@ const pool = new Pool({
   port: 5432,
 });
 
-// Rate limiting for signups
 const signupLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // Limit each IP to 5 signup requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 5, 
   message: { error: 'Too many signup attempts, please try again later.' }
 });
 
-// Verify database connection and table structure
 const verifyDatabase = async () => {
   try {
-    // Check if users table exists and has correct structure
     const usersTable = await pool.query(`
       SELECT column_name, data_type 
       FROM information_schema.columns 
@@ -57,8 +54,6 @@ const verifyDatabase = async () => {
 verifyDatabase();
 
 const JWT_SECRET = process.env.SUPABASE_JWT_SECRET || 'your-supabase-jwt-secret';
-
-// Auth Middleware - Verify Supabase JWT
 const authMiddleware = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -70,8 +65,6 @@ const authMiddleware = async (req, res, next) => {
     }
 
     const token = authHeader.substring(7);
-
-    // Verify JWT token using Supabase's secret
     let decoded;
     try {
       decoded = jwt.verify(token, JWT_SECRET);
@@ -80,8 +73,6 @@ const authMiddleware = async (req, res, next) => {
         error: 'Invalid or expired token' 
       });
     }
-
-    // Add user info from JWT to request object
     req.user = {
       id: decoded.sub,
       email: decoded.email,
@@ -97,8 +88,6 @@ const authMiddleware = async (req, res, next) => {
     });
   }
 };
-
-// Routes
 app.get('/', (req, res) => {
   res.json({ 
     message: 'Campus Study Buddy API',
@@ -106,8 +95,6 @@ app.get('/', (req, res) => {
     database: 'SDP'
   });
 });
-
-// Health check
 app.get('/api/health', async (req, res) => {
   try {
     await pool.query('SELECT 1');
@@ -124,8 +111,6 @@ app.get('/api/health', async (req, res) => {
     });
   }
 });
-
-// SIGN UP ROUTE - REMOVED authMiddleware AND ADDED rate limiting
 app.post('/api/users', signupLimiter, async (req, res) => {
   try {
     const { supabaseUserId, email, displayName, major, year } = req.body;
@@ -137,8 +122,6 @@ app.post('/api/users', signupLimiter, async (req, res) => {
     }
 
     console.log('Creating user in SDP database:', { supabaseUserId, email, displayName });
-
-    // Insert into users table
     const userResult = await pool.query(
       `INSERT INTO users (supabase_user_id, email, display_name) 
        VALUES ($1, $2, $3) 
@@ -147,8 +130,6 @@ app.post('/api/users', signupLimiter, async (req, res) => {
     );
 
     const userId = userResult.rows[0].user_id;
-
-    // Insert into profiles table
     if (major || year) {
       await pool.query(
         `INSERT INTO profiles (user_id, major, year) 
@@ -175,9 +156,6 @@ app.post('/api/users', signupLimiter, async (req, res) => {
   }
 });
 
-// 🔐 PROTECTED ROUTES (keep authMiddleware for these)
-
-// Get current user's profile from SDP database
 app.get('/api/profile', authMiddleware, async (req, res) => {
   try {
     const userResult = await pool.query(
@@ -227,13 +205,9 @@ app.get('/api/me', authMiddleware, async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch user data' });
   }
 });
-
-// Update user profile in SDP database
 app.put('/api/profile', authMiddleware, async (req, res) => {
   try {
     const { displayName, major, year, bio, interests } = req.body;
-    
-    // Update users table
     const userResult = await pool.query(
       `UPDATE users 
        SET display_name = $1
@@ -247,8 +221,6 @@ app.put('/api/profile', authMiddleware, async (req, res) => {
     }
 
     const userId = userResult.rows[0].user_id;
-
-    // Update or insert into profiles table
     const profileResult = await pool.query(
       `INSERT INTO profiles (user_id, major, year, bio, interests)
        VALUES ($1, $2, $3, $4, $5)

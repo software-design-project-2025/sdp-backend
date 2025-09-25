@@ -1,9 +1,15 @@
 package com.ctrlaltdelinquents.backend.config;
-
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @Configuration
+@ConfigurationProperties(prefix = "app")
 public class SupabaseConfig {
     
     @Value("${supabase.url}")
@@ -19,4 +25,5 @@ public class SupabaseConfig {
     public String getSupabaseJwtSecret() {
         return supabaseJwtSecret;
     }
+
 }
