@@ -4,12 +4,12 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "\"user\"") // Keep team's table name
+@Table(name = "\"user\"")
 public class User {
 
     @Id
     @Column(name = "userid")
-    private int userid;
+    private String userid;
 
     @Column(name = "username")
     private String username;
@@ -24,16 +24,19 @@ public class User {
     private String degreeid;
 
     @Column(name = "yearofstudy")
-    private String yearofstudy;
+    private int yearofstudy; // CORRECT: matches database INT type
 
     @Column(name = "bio")
     private String bio;
+
+    @Column(name = "status")
+    private String status;
 
     @Column(name = "profile_picture")
     private String profilePicture;
 
     @Column(unique = true, name = "supabase_user_id")
-    private String supabaseUserId; // For Supabase auth
+    private String supabaseUserId;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -41,7 +44,7 @@ public class User {
     public User() {
     }
 
-    public User(int userid, String username, String email, String role) {
+    public User(String userid, String username, String email, String role) {
         this.userid = userid;
         this.username = username;
         this.email = email;
@@ -56,11 +59,12 @@ public class User {
         this.createdAt = LocalDateTime.now();
     }
 
-    public int getUserid() {
+    // Getters and setters
+    public String getUserid() {
         return userid;
     }
 
-    public void setUserid(int userid) {
+    public void setUserid(String userid) {
         this.userid = userid;
     }
 
@@ -88,12 +92,36 @@ public class User {
         this.role = role;
     }
 
+    public String getDegreeid() {
+        return degreeid;
+    }
+
+    public void setDegreeid(String degreeid) {
+        this.degreeid = degreeid;
+    }
+
+    public int getYearofstudy() {
+        return yearofstudy;
+    }
+
+    public void setYearofstudy(int yearofstudy) {
+        this.yearofstudy = yearofstudy;
+    }
+
     public String getBio() {
         return bio;
     }
 
     public void setBio(String bio) {
         this.bio = bio;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getProfilePicture() {
