@@ -1,7 +1,8 @@
+// src/main/java/com/ctrlaltdelinquents/backend/controller/UserController.java
 package com.ctrlaltdelinquents.backend.controller;
 
-import com.ctrlaltdelinquents.backend.repo.UserRepository;
 import com.ctrlaltdelinquents.backend.model.User;
+import com.ctrlaltdelinquents.backend.repo.UserRepository;
 
 import java.util.List;
 
@@ -11,10 +12,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
-
     private final UserRepository userRepository;
 
-    // Constructor injection
     public UserController(UserRepository userRepository) {
         this.userRepository = userRepository;
     }

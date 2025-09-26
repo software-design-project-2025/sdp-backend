@@ -7,8 +7,12 @@ const rateLimit = require('express-rate-limit');
 
 const app = express();
 const PORT = 3001;
+
+// Middleware
 app.use(cors());
 app.use(express.json());
+
+// PostgreSQL connection pool for YOUR SDP database
 const pool = new Pool({
   user: 'postgres',
   host: 'localhost',
@@ -32,6 +36,15 @@ const verifyDatabase = async () => {
     `);
     
     console.log('✅ Users table columns:', usersTable.rows);
+    
+    // Check if profiles table exists
+    const profilesTable = await pool.query(`
+      SELECT column_name, data_type 
+      FROM information_schema.columns 
+      WHERE table_name = 'profiles'
+    `);
+    
+    console.log('✅ Profiles table columns:', profilesTable.rows);
     
   } catch (error) {
     console.error('❌ Database verification error:', error);
