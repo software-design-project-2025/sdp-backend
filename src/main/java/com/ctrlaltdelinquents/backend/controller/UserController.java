@@ -2,46 +2,32 @@
 package com.ctrlaltdelinquents.backend.controller;
 
 import com.ctrlaltdelinquents.backend.model.User;
-import com.ctrlaltdelinquents.backend.service.UserService;
-import org.springframework.http.ResponseEntity;
+import com.ctrlaltdelinquents.backend.repo.UserRepository;
+
+import java.util.List;
+
 import org.springframework.web.bind.annotation.*;
-import java.util.Optional;
+
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/user")
 public class UserController {
-    private final UserService userService;
+    private final UserRepository userRepository;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public UserController(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
-    // Create user (called after Supabase signup)
-    @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        return ResponseEntity.ok(userService.createUser(user));
-    }
+    @PostMapping("/createUser")
+    @ResponseBody
+    public User createUser(@RequestBody User user) {
 
-    // Get user by Supabase UID
-    @GetMapping("/{supabaseUserId}")
-    public ResponseEntity<User> getUser(@PathVariable String supabaseUserId) {
-        Optional<User> user = userService.getUserBySupabaseId(supabaseUserId);
-        return user.map(ResponseEntity::ok)
-                  .orElse(ResponseEntity.notFound().build());
-    }
+        //Check if user exists
+        List<User> doesUserExist = userRepository.findByUserId(user.getUserid());
+        if (doesUserExist.size() == 0){
+            return userRepository.save(user);
+        }
 
-    // Update user
-    @PutMapping("/{supabaseUserId}")
-    public ResponseEntity<User> updateUser(
-            @PathVariable String supabaseUserId,
-            @RequestBody User updates) {
-        return ResponseEntity.ok(userService.updateUser(supabaseUserId, updates));
-    }
-    
-    // Delete user
-    @DeleteMapping("/{supabaseUserId}")
-    public ResponseEntity<Void> deleteUser(@PathVariable String supabaseUserId) {
-        userService.deleteUser(supabaseUserId);
-        return ResponseEntity.noContent().build();
+        return doesUserExist.get(0);
     }
 }
