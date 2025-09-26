@@ -6,6 +6,9 @@ import com.ctrlaltdelinquents.backend.repo.UserRepository;
 
 import java.util.List;
 
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -29,5 +32,41 @@ public class UserController {
         }
 
         return doesUserExist.get(0);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllUsers() {
+        try {
+            List<User> users = userRepository.findAll();
+
+            if (users.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Error: No users found");
+            } else {
+                return ResponseEntity.ok(users);
+            }
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error: Failed to fetch users" + e.getMessage());
+        }
+    }
+
+    @GetMapping("/{userid}")
+    public ResponseEntity<?> getUserById(@PathVariable String userid) {
+        try {
+            List<User> user = userRepository.findByUserId(userid);
+            if(user.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Error: User with id " + userid + "not found");
+            }
+            else{
+                return ResponseEntity.ok(user);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error: Failed to fetch user "+ userid+ " by ID" + e.getMessage());
+        }
+
     }
 }
