@@ -1,5 +1,7 @@
 package com.ctrlaltdelinquents.backend.controller;
 
+import com.ctrlaltdelinquents.backend.dto.ProgressStats;
+import com.ctrlaltdelinquents.backend.dto.WeeklyStudyStats;
 import com.ctrlaltdelinquents.backend.model.Topic;
 import com.ctrlaltdelinquents.backend.repo.TopicRepository;
 import org.springframework.http.HttpStatus;
@@ -68,6 +70,29 @@ public class TopicController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error: Failed to fetch in-progress topics: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/stats/{userId}")
+    public ResponseEntity<ProgressStats> getProgressStats(@PathVariable String userId) {
+        try {
+            ProgressStats stats = topicRepository.getProgressStatsForUser(userId);
+            return ResponseEntity.ok(stats);
+        } catch (Exception e) {
+            // Log the exception details here for debugging
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/weekly-hours/{userId}")
+    public ResponseEntity<List<WeeklyStudyStats>> getWeeklyStudyHours(@PathVariable String userId) {
+        try {
+            List<WeeklyStudyStats> weeklyData = topicRepository.getWeeklyStudyHours(userId);
+            return ResponseEntity.ok(weeklyData);
+        } catch (Exception e) {
+            // It's good practice to log the exception
+            // e.g., log.error("Error fetching weekly study hours for user: {}", userId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
