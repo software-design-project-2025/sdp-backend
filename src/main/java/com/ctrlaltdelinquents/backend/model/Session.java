@@ -21,10 +21,10 @@ public class Session {
     private String title;
 
     @Column(name = "start_time")
-    private LocalDateTime start_time;
+    private LocalDateTime startTime;
 
     @Column(name = "end_time")
-    private LocalDateTime end_time;
+    private LocalDateTime endTime;
 
     @Column(name = "status")
     private String status;
