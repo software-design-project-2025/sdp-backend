@@ -20,13 +20,15 @@ public interface SessionRepo extends JpaRepository<Session, Integer> {
     List<Session> findUpcomingSessions(@Param("userId") String userId);
 
     // Get total study hours for a user in the past 7 days
+    // only counts completed sessions user was part of
     @Query(value = "SELECT COALESCE(SUM(EXTRACT(EPOCH FROM (s.end_time - s.start_time)) / 3600), 0) " +
             "FROM session s " +
-            "LEFT JOIN session_members sm ON s.sessionid = sm.sessionid " +
-            "WHERE (s.creatorid = :userId OR sm.userid = :userId) " +
+            "JOIN session_members sm ON s.sessionid = sm.sessionid " + // Changed to INNER JOIN (must be member)
+            "WHERE sm.userid = :userId " + // User must be a session member
             "AND s.end_time IS NOT NULL " +
-            "AND s.start_time >= CURRENT_DATE - INTERVAL '7 days' " +
-            "AND s.end_time <= CURRENT_TIMESTAMP", nativeQuery = true)
-    Double getTotalStudyHoursLast7Days(@Param("userId") String userId);
+            "AND s.status = 'completed' " + // Session must be marked as completed
+            "AND s.end_time <= CURRENT_TIMESTAMP " + // Session must be in the past
+            "AND s.start_time >= CURRENT_DATE - INTERVAL '7 days'", nativeQuery = true)
+    Double getActualStudyHoursLast7Days(@Param("userId") String userId);
 
 }

@@ -30,7 +30,7 @@ public class SessionController {
     // GET total study hours for a user in the past 7 days
     @GetMapping("/sessions/study-hours")
     public StudyHoursResponse getStudyHoursLast7Days(@RequestParam String userId) {
-        Double totalHours = sessionRepo.getTotalStudyHoursLast7Days(userId);
+        Double totalHours = sessionRepo.getActualStudyHoursLast7Days(userId);
 
         // Round to nearest whole number for simplicity
         int roundedHours = totalHours != null ? (int) Math.round(totalHours) : 0;
