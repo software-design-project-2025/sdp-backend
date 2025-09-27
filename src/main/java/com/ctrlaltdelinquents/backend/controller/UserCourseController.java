@@ -14,8 +14,8 @@ import java.util.*;
 @RestController
 @RequestMapping("api/courses")
 public class UserCourseController {
-   @Autowired
-   private UserCourseRepository userCourseRepository;
+    @Autowired
+    private UserCourseRepository userCourseRepository;
 
    @GetMapping("/{id}")
    public ResponseEntity<?> getAllUserCourses(@PathVariable String id) {

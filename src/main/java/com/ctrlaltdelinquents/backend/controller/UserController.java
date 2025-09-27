@@ -39,12 +39,12 @@ public class UserController {
         try {
             List<User> users = userRepository.findAll();
 
-            if (users.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body("Error: No users found");
-            } else {
-                return ResponseEntity.ok(users);
-            }
+//             if (users.isEmpty()) {
+//                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
+//                         .body("Error: No users found");
+//             } else {
+//                 return ResponseEntity.ok(users);
+//             }
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
