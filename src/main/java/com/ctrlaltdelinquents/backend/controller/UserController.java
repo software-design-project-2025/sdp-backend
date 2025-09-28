@@ -1,6 +1,7 @@
 // src/main/java/com/ctrlaltdelinquents/backend/controller/UserController.java
 package com.ctrlaltdelinquents.backend.controller;
 
+import com.ctrlaltdelinquents.backend.dto.UserProgressStats;
 import com.ctrlaltdelinquents.backend.model.User;
 import com.ctrlaltdelinquents.backend.repo.UserRepository;
 
@@ -68,5 +69,16 @@ public class UserController {
                     .body("Error: Failed to fetch user "+ userid+ " by ID" + e.getMessage());
         }
 
+    }
+
+    @GetMapping("/stats/{userId}")
+    public ResponseEntity<UserProgressStats> userGetProgressStats(@PathVariable String userId) {
+        try {
+            UserProgressStats stats = userRepository.userGetProgressStats(userId);
+            return ResponseEntity.ok(stats);
+        } catch (Exception e) {
+            // Log the exception details here for debugging
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
