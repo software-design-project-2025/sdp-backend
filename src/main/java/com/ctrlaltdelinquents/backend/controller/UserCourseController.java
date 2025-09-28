@@ -1,6 +1,8 @@
 package com.ctrlaltdelinquents.backend.controller;
 import com.ctrlaltdelinquents.backend.model.UserCourse;
 import com.ctrlaltdelinquents.backend.repo.UserCourseRepository;
+import com.ctrlaltdelinquents.backend.repo.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,10 @@ import java.util.*;
 public class UserCourseController {
     @Autowired
     private UserCourseRepository userCourseRepository;
+
+    public UserCourseController (UserCourseRepository userCourseRepository){
+        this.userCourseRepository = userCourseRepository;
+    }
 
    @GetMapping("/{id}")
    public ResponseEntity<?> getAllUserCourses(@PathVariable String id) {
