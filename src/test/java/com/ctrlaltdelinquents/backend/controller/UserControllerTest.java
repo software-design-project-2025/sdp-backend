@@ -1,153 +1,166 @@
-// package com.ctrlaltdelinquents.backend.controller;
+package com.ctrlaltdelinquents.backend.controller;
 
-// import com.ctrlaltdelinquents.backend.model.Module;
-// import com.ctrlaltdelinquents.backend.model.User;
-// import com.ctrlaltdelinquents.backend.repo.ModuleRepository;
-// import com.ctrlaltdelinquents.backend.repo.UserCourseRepository;
-// import com.ctrlaltdelinquents.backend.repo.UserRepository;
-// import org.junit.jupiter.api.BeforeEach;
-// import org.junit.jupiter.api.DisplayName;
-// import org.junit.jupiter.api.Test;
-// import org.springframework.http.ResponseEntity;
+import com.ctrlaltdelinquents.backend.dto.UserProgressStats;
+import com.ctrlaltdelinquents.backend.model.User;
+import com.ctrlaltdelinquents.backend.repo.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-// import java.util.List;
-// import java.util.Optional;
+import java.util.List;
+import java.util.Collections;
 
-// import static org.assertj.core.api.Assertions.assertThat;
-// import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
-// class UserControllerTest {
+class UserControllerTest {
 
-//     private UserService userService;
-//     private UserRepository userRepo;
-//     private UserCourseRepository userCourseRepository;
-//     private ModuleRepository moduleRepository;
-//     private UserController userController;
+    private UserRepository userRepository;
+    private UserController userController;
 
-//     @BeforeEach
-//     void setUp() {
-//         userService = mock(UserService.class);
-//         userRepo = mock(UserRepository.class);
-//         userCourseRepository = mock(UserCourseRepository.class);
-//         moduleRepository = mock(ModuleRepository.class);
+    @BeforeEach
+    void setUp() {
+        userRepository = mock(UserRepository.class);
+        userController = new UserController(userRepository);
+    }
 
-//         userController = new UserController(userService, userRepo);
-//         userController.userCourseRepository = userCourseRepository;
-//         userController.moduleRepository = moduleRepository;
-//     }
+    @Test
+    @DisplayName("Should create a new user and return it")
+    void createUser_returnsCreatedUser() {
+        User user = new User();
+        user.setUserid("supabase123");
+        user.setRole("student");
+        user.setBio("Test User");
 
-//     @Test
-//     @DisplayName("Should create a user and return it")
-//     void createUser_returnsCreatedUser() {
-//         User user = new User("supabase123", "test@example.com", "Test User");
-//         when(userService.createUser(user)).thenReturn(user);
+        when(userRepository.findByUserId("supabase123")).thenReturn(Collections.emptyList());
+        when(userRepository.save(user)).thenReturn(user);
 
-//         ResponseEntity<User> response = userController.createUser(user);
+        User response = userController.createUser(user);
 
-//         assertThat(response.getBody()).isEqualTo(user);
-//         verify(userService, times(1)).createUser(user);
-//     }
+        assertThat(response).isEqualTo(user);
+        verify(userRepository, times(1)).findByUserId("supabase123");
+        verify(userRepository, times(1)).save(user);
+    }
 
-//     @Test
-//     @DisplayName("Should return user by Supabase ID if exists")
-//     void getUserBySupabaseId_returnsUser() {
-//         User user = new User("supabase123", "test@example.com", "Test User");
-//         when(userService.getUserBySupabaseId("supabase123")).thenReturn(Optional.of(user));
+    @Test
+    @DisplayName("Should return existing user if user already exists")
+    void createUser_returnsExistingUser() {
+        User existingUser = new User();
+        existingUser.setUserid("supabase123");
+        existingUser.setRole("student");
+        existingUser.setBio("Existing User");
 
-//         ResponseEntity<User> response = userController.getUserBySupabaseId("supabase123");
+        User newUser = new User();
+        newUser.setUserid("supabase123");
+        newUser.setRole("teacher");
+        newUser.setBio("New User");
 
-//         assertThat(response.getBody()).isEqualTo(user);
-//         verify(userService, times(1)).getUserBySupabaseId("supabase123");
-//     }
+        when(userRepository.findByUserId("supabase123")).thenReturn(List.of(existingUser));
 
-//     @Test
-//     @DisplayName("Should return 404 if user by Supabase ID does not exist")
-//     void getUserBySupabaseId_returnsNotFound() {
-//         when(userService.getUserBySupabaseId("unknown")).thenReturn(Optional.empty());
+        User response = userController.createUser(newUser);
 
-//         ResponseEntity<User> response = userController.getUserBySupabaseId("unknown");
+        assertThat(response).isEqualTo(existingUser);
+        verify(userRepository, times(1)).findByUserId("supabase123");
+        verify(userRepository, never()).save(any());
+    }
 
-//         assertThat(response.getStatusCode().value()).isEqualTo(404);
-//     }
+    @Test
+    @DisplayName("Should return all users when users exist")
+    void getAllUsers_returnsUsers() {
+        User user1 = new User();
+        user1.setUserid("user1");
+        user1.setRole("student");
 
-//     @Test
-//     @DisplayName("Should update user by Supabase ID")
-//     void updateUserBySupabaseId_returnsUpdatedUser() {
-//         User updates = new User("supabase123", "updated@example.com", "Updated User");
-//         when(userService.updateUser("supabase123", updates)).thenReturn(updates);
+        User user2 = new User();
+        user2.setUserid("user2");
+        user2.setRole("teacher");
 
-//         ResponseEntity<User> response = userController.updateUserBySupabaseId("supabase123", updates);
+        when(userRepository.findAll()).thenReturn(List.of(user1, user2));
 
-//         assertThat(response.getBody()).isEqualTo(updates);
-//         verify(userService, times(1)).updateUser("supabase123", updates);
-//     }
+        ResponseEntity<?> response = userController.getAllUsers();
 
-//     @Test
-//     @DisplayName("Should delete user by Supabase ID")
-//     void deleteUserBySupabaseId_returnsNoContent() {
-//         ResponseEntity<Void> response = userController.deleteUserBySupabaseId("supabase123");
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        @SuppressWarnings("unchecked")
+        List<User> users = (List<User>) response.getBody();
+        assertThat(users).containsExactly(user1, user2);
+        verify(userRepository, times(1)).findAll();
+    }
 
-//         assertThat(response.getStatusCode().value()).isEqualTo(204);
-//         verify(userService, times(1)).deleteUser("supabase123");
-//     }
+    @Test
+    @DisplayName("Should return 404 when no users exist")
+    void getAllUsers_returnsNotFoundWhenEmpty() {
+        when(userRepository.findAll()).thenReturn(Collections.emptyList());
 
-//     @Test
-//     @DisplayName("Should return all users")
-//     void getAllUsers_returnsUsers() {
-//         User user1 = new User("supabase1", "a@example.com", "User A");
-//         User user2 = new User("supabase2", "b@example.com", "User B");
-//         when(userRepo.findAll()).thenReturn(List.of(user1, user2));
+        ResponseEntity<?> response = userController.getAllUsers();
 
-//         List<User> result = userController.getAllUsers();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getBody()).isEqualTo("Error: No users found");
+        verify(userRepository, times(1)).findAll();
+    }
 
-//         assertThat(result).containsExactly(user1, user2);
-//         verify(userRepo, times(1)).findAll();
-//     }
+    @Test
+    @DisplayName("Should return 500 when database error occurs in getAllUsers")
+    void getAllUsers_returnsInternalServerError() {
+        when(userRepository.findAll()).thenThrow(new RuntimeException("Database error"));
 
-//     @Test
-//     @DisplayName("Should return user by database ID if exists")
-//     void getUserById_returnsUser() {
-//         User user = new User("supabase1", "a@example.com", "User A");
-//         when(userRepo.findById(1)).thenReturn(Optional.of(user));
+        ResponseEntity<?> response = userController.getAllUsers();
 
-//         ResponseEntity<?> response = userController.getUserById(1);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(response.getBody()).asString().contains("Error: Failed to fetch users");
+    }
 
-//         assertThat(response.getBody()).isEqualTo(user);
-//     }
+    @Test
+    @DisplayName("Should return user by ID if exists")
+    void getUserById_returnsUser() {
+        User user = new User();
+        user.setUserid("user123");
+        user.setRole("student");
 
-//     @Test
-//     @DisplayName("Should return 404 when user by database ID does not exist")
-//     void getUserById_returnsNotFound() {
-//         when(userRepo.findById(99)).thenReturn(Optional.empty());
+        when(userRepository.findByUserId("user123")).thenReturn(List.of(user));
 
-//         ResponseEntity<?> response = userController.getUserById(99);
+        ResponseEntity<?> response = userController.getUserById("user123");
 
-//         assertThat(response.getStatusCode().value()).isEqualTo(404);
-//     }
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        @SuppressWarnings("unchecked")
+        List<User> users = (List<User>) response.getBody();
+        assertThat(users).containsExactly(user);
+        verify(userRepository, times(1)).findByUserId("user123");
+    }
 
-//     @Test
-//     @DisplayName("Should return user subjects if they exist")
-//     void getUserSubjects_returnsSubjects() {
-//         //String userId = "1";
-//         when(userCourseRepository.findCourseCodesByUserId(1)).thenReturn(List.of("CS101"));
-//         Module module = new Module();
-//         module.setCourseCode("CS101");
-//         module.setCourseName("Computer Science");
-//         when(moduleRepository.findByCourseCode("CS101")).thenReturn(module);
+    @Test
+    @DisplayName("Should return 404 when user by ID does not exist")
+    void getUserById_returnsNotFound() {
+        when(userRepository.findByUserId("unknown")).thenReturn(Collections.emptyList());
 
-//         ResponseEntity<?> response = userController.getUserSubjects(1);
+        ResponseEntity<?> response = userController.getUserById("unknown");
 
-//         List<?> subjects = (List<?>) response.getBody();
-//         assertThat(subjects).hasSize(1);
-//     }
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(response.getBody()).isEqualTo("Error: User with id unknown" + "not found");
+        verify(userRepository, times(1)).findByUserId("unknown");
+    }
 
-//     @Test
-//     @DisplayName("Should return 404 if user has no subjects")
-//     void getUserSubjects_returnsNotFoundWhenEmpty() {
-//         when(userCourseRepository.findCourseCodesByUserId(1)).thenReturn(List.of());
+    @Test
+    @DisplayName("Should return 500 when database error occurs in getUserById")
+    void getUserById_returnsInternalServerError() {
+        when(userRepository.findByUserId("user123")).thenThrow(new RuntimeException("Database error"));
 
-//         ResponseEntity<?> response = userController.getUserSubjects(1);
+        ResponseEntity<?> response = userController.getUserById("user123");
 
-//         assertThat(response.getStatusCode().value()).isEqualTo(404);
-//     }
-// }
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(response.getBody()).asString().contains("Error: Failed to fetch user user123 by ID");
+    }
+
+    @Test
+    @DisplayName("Should return 500 when error occurs getting progress stats")
+    void userGetProgressStats_returnsInternalServerError() {
+        when(userRepository.userGetProgressStats("user123")).thenThrow(new RuntimeException("Database error"));
+
+        ResponseEntity<UserProgressStats> response = userController.userGetProgressStats("user123");
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(response.getBody()).isNull();
+        verify(userRepository, times(1)).userGetProgressStats("user123");
+    }
+}

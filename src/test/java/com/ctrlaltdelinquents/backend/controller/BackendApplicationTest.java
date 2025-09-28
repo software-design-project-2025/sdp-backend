@@ -26,14 +26,14 @@ class BackendApplicationTest {
         // This test just ensures the Spring context starts up.
     }
 
-    /*@Test
+    @Test
     @WithMockUser
     void rootEndpoint_returnsDeploymentMessage() throws Exception {
         mockMvc.perform(get("/")
                         .header("Authorization", apiKey))
                 .andExpect(status().isOk())
                 .andExpect(content().string("App successfully deployed on Azure"));
-    }*/
+    }
 
     @Test
     void mainMethod_runsWithoutCrashing() {
