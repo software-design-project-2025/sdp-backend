@@ -17,6 +17,10 @@ public class UserCourseController {
     @Autowired
     private UserCourseRepository userCourseRepository;
 
+    public UserCourseController(UserCourseRepository userCourseRepository) {
+        this.userCourseRepository = userCourseRepository;
+    }
+
    @GetMapping("/{id}")
    public ResponseEntity<?> getAllUserCourses(@PathVariable String id) {
        List<String> courses = userCourseRepository.findCourseCodesByUserId(id);
