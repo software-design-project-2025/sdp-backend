@@ -10,4 +10,6 @@ import org.springframework.data.repository.query.Param;
 public interface ModuleRepository extends JpaRepository<Module, Integer> {
     @Query(value = "SELECT * FROM module WHERE course_code = :courseCode", nativeQuery = true)
     Module findByCourseCode(@Param("courseCode") String courseCode);
+    boolean existsByCourseCode(String courseCode);
+
 }
