@@ -39,6 +39,48 @@ public class SessionController {
         return new StudyHoursResponse(userId, roundedHours, exactHours);
     }
 
+    // GET number of sessions attended by user in past 7 days
+    @GetMapping("/sessions/num-sessions")
+    public SessionCountResponse getNumberOfSessionsAttended(@RequestParam String userId) {
+        Integer sessionCount = sessionRepo.countSessionsAttendedLast7Days(userId);
+
+        // Handle null case and return 0 if no sessions found
+        int count = sessionCount != null ? sessionCount : 0;
+
+        return new SessionCountResponse(userId, count);
+    }
+
+    // Add this Response DTO inside your SessionController class
+    public static class SessionCountResponse {
+        private String userId;
+        private int numSessions;
+
+        public SessionCountResponse() {
+        }
+
+        public SessionCountResponse(String userId, int numSessions) {
+            this.userId = userId;
+            this.numSessions = numSessions;
+        }
+
+        // Getters and setters
+        public String getUserId() {
+            return userId;
+        }
+
+        public void setUserId(String userId) {
+            this.userId = userId;
+        }
+
+        public int getNumSessions() {
+            return numSessions;
+        }
+
+        public void setNumSessions(int numSessions) {
+            this.numSessions = numSessions;
+        }
+    }
+
     // Response DTO for study hours
     public static class StudyHoursResponse {
         private String userId;

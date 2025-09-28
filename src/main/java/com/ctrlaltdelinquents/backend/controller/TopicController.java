@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -24,18 +25,17 @@ public class TopicController {
 
     @GetMapping("/{userid}")
     public ResponseEntity<?> getTopicsByUserId(@PathVariable String userid) {
-        try{
+        try {
             List<Topic> topics = topicRepository.findAllByUserid(userid);
 
-            if(topics.isEmpty()){
+            if (topics.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body("Error: No topics found for userid: " + userid);
             }
             return ResponseEntity.ok(topics);
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Error: Failed to fetch topics: "+ e.getMessage());
+                    .body("Error: Failed to fetch topics: " + e.getMessage());
         }
     }
 
@@ -93,6 +93,48 @@ public class TopicController {
             // It's good practice to log the exception
             // e.g., log.error("Error fetching weekly study hours for user: {}", userId, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    // Get number of topics completed in last 7 days
+    @GetMapping("/topics/num-topics")
+    public TopicCountResponse getNumberOfTopics(@RequestParam String userId) {
+        Integer topicCount = topicRepository.countTopicsCompletedLast7Days(userId);
+
+        // Handle null case and return 0 if no topics found
+        int count = topicCount != null ? topicCount : 0;
+
+        return new TopicCountResponse(userId, count);
+    }
+
+    // Simple Response DTO
+    public static class TopicCountResponse {
+        private String userId;
+        private int numTopics;
+
+        public TopicCountResponse() {
+        }
+
+        public TopicCountResponse(String userId, int numTopics) {
+            this.userId = userId;
+            this.numTopics = numTopics;
+        }
+
+        // Getters and setters
+        public String getUserId() {
+            return userId;
+        }
+
+        public void setUserId(String userId) {
+            this.userId = userId;
+        }
+
+        public int getNumTopics() {
+            return numTopics;
+        }
+
+        public void setNumTopics(int numTopics) {
+            this.numTopics = numTopics;
         }
     }
 
