@@ -1,65 +1,84 @@
-// package com.ctrlaltdelinquents.backend.controller;
+// src/main/java/com/ctrlaltdelinquents/backend/controller/UserController.java
+package com.ctrlaltdelinquents.backend.controller;
 
-// import com.ctrlaltdelinquents.backend.repo.UserRepository;
-// import com.ctrlaltdelinquents.backend.model.User;
-// import org.springframework.http.HttpStatus;
-// import org.springframework.http.ResponseEntity;
-// import org.springframework.web.bind.annotation.*;
+import com.ctrlaltdelinquents.backend.dto.UserProgressStats;
+import com.ctrlaltdelinquents.backend.model.User;
+import com.ctrlaltdelinquents.backend.repo.UserRepository;
 
-// import java.util.List;
+import java.util.List;
 
-// @RestController
-// @RequestMapping("/api/users")
-// public class UserController {
 
-//     private final UserRepository userRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-//     // Constructor injection
-//     public UserController(UserRepository userRepository) {
-//         this.userRepository = userRepository;
-//     }
 
-//     @GetMapping("/all")
-//     public ResponseEntity<?> getAllUsers() {
-//         try {
-//             List<User> users = userRepository.findAll();
+@RestController
+@RequestMapping("/api/users")
+public class UserController {
+    private final UserRepository userRepository;
 
-//             if (users.isEmpty()) {
-//                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-//                         .body("Error: No users found");
-//             } else {
-//                 return ResponseEntity.ok(users);
-//             }
+    public UserController(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
-//         } catch (Exception e) {
-//             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                     .body("Error: Failed to fetch users" + e.getMessage());
-//         }
-//     }
+    @PostMapping("/createUser")
+    @ResponseBody
+    public User createUser(@RequestBody User user) {
 
-//     // GET user subjects
-//     @GetMapping("/{id}/subjects")
-//     public ResponseEntity<?> getUserSubjects(@PathVariable int id) {
-//         List<String> optionalUserCourse = userCourseRepository.findCourseCodesByUserId(id);
-//         List<Map<String, String>> subjects = new ArrayList<>();
+        //Check if user exists
+        List<User> doesUserExist = userRepository.findByUserId(user.getUserid());
+        if (doesUserExist.size() == 0){
+            return userRepository.save(user);
+        }
 
-//         if(optionalUserCourse == null || optionalUserCourse.isEmpty()) {
-//             Map<String, String> response = new HashMap<>();
-//             response.put("error", "No subjects found for user with id " + id);
-//             return ResponseEntity.status(404).body(response);
-//         }
+        return doesUserExist.get(0);
+    }
 
-//         for(String courseCode : optionalUserCourse) {
-//             Module module = moduleRepository.findByCourseCode(courseCode);
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllUsers() {
+        try {
+            List<User> users = userRepository.findAll();
 
-//             if(module != null) {
-//                 Map<String, String> subjectInfo = new HashMap<>();
-//                 subjectInfo.put("courseCode", courseCode);
-//                 subjectInfo.put("courseName", module.getCourseName());
-//                 subjects.add(subjectInfo);
-//             }
-//         }
+            if (users.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Error: No users found");
+            } else {
+                return ResponseEntity.ok(users);
+            }
 
-//         return ResponseEntity.ok(subjects);
-//     }
-// }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error: Failed to fetch users" + e.getMessage());
+        }
+    }
+
+    @GetMapping("/{userid}")
+    public ResponseEntity<?> getUserById(@PathVariable String userid) {
+        try {
+            List<User> user = userRepository.findByUserId(userid);
+            if(user.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Error: User with id " + userid + "not found");
+            }
+            else{
+                return ResponseEntity.ok(user);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error: Failed to fetch user "+ userid+ " by ID" + e.getMessage());
+        }
+
+    }
+
+    @GetMapping("/stats/{userId}")
+    public ResponseEntity<UserProgressStats> userGetProgressStats(@PathVariable String userId) {
+        try {
+            UserProgressStats stats = userRepository.userGetProgressStats(userId);
+            return ResponseEntity.ok(stats);
+        } catch (Exception e) {
+            // Log the exception details here for debugging
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+}

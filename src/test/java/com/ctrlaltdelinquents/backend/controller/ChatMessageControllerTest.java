@@ -11,6 +11,9 @@ import java.util.List;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 import org.mockito.ArgumentCaptor;
 
@@ -112,5 +115,55 @@ class ChatMessageControllerTest {
         assertThat(captured.getMessage()).isEqualTo("Hi");
      
     }
+    //Validation and Error Cases
+    @Test
+    @DisplayName("Should handle null input - current behavior")
+    void createMessage_handlesNullInput() {
+        // First, check what actually happens with your current implementation
+        when(chatMessageRepo.save(null)).thenThrow(new IllegalArgumentException("Entity must not be null"));
+        
+        // This will test the actual behavior
+        assertThrows(IllegalArgumentException.class, () -> chatMessageController.createMessage(null));
+    }
+
+    @Test
+    @DisplayName("Should handle empty or invalid chat IDs")
+    void getMessageByChat_handlesInvalidChatId() {
+        // Test with 0, negative numbers, etc.
+        List<ChatMessage> result = chatMessageController.getMessageByChat(-1);
+        assertThat(result).isEmpty();
+    }
+
+    //Repository Exception Handling
+    @Test
+    @DisplayName("Should handle repository exceptions gracefully")
+    void getMessageByChat_handlesRepositoryException() {
+        when(chatMessageRepo.findByChat(anyInt())).thenThrow(new RuntimeException("DB error"));
+        
+        assertThrows(RuntimeException.class, () -> chatMessageController.getMessageByChat(1));
+    }
+
+    @Test
+    @DisplayName("Should handle save failures")
+    void createMessage_handlesSaveFailure() {
+        ChatMessage message = new ChatMessage();
+        when(chatMessageRepo.save(any())).thenThrow(new RuntimeException("Save failed"));
+        
+        assertThrows(RuntimeException.class, () -> chatMessageController.createMessage(message));
+    }
+
+   // Boundary Conditions
+    @Test
+    @DisplayName("Should handle very long messages")
+    void createMessage_handlesLongMessage() {
+        ChatMessage message = new ChatMessage();
+        String longMessage = "A".repeat(1000); // or your column limit
+        message.setMessage(longMessage);
+        
+        when(chatMessageRepo.save(message)).thenReturn(message);
+        
+        ChatMessage saved = chatMessageController.createMessage(message);
+        assertThat(saved.getMessage()).isEqualTo(longMessage);
+    } 
 }
 

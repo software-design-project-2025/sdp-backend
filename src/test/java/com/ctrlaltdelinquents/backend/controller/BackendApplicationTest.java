@@ -1,6 +1,6 @@
 package com.ctrlaltdelinquents.backend.controller;
 
-import com.ctrlaltdelinquents.backend.BackendApplication;
+import com.ctrlaltdelinquents.backend.CampusStudyBuddyApplication;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,6 +37,6 @@ class BackendApplicationTest {
 
     @Test
     void mainMethod_runsWithoutCrashing() {
-        BackendApplication.main(new String[] {});
+        CampusStudyBuddyApplication.main(new String[] {});
     }
 }
