@@ -122,7 +122,7 @@ public class TopicController {
 
 
         try {
-            Topic savedTopic = topicRepo.save(topic);
+            Topic savedTopic = topicRepository.save(topic);
             return ResponseEntity.ok(savedTopic);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
