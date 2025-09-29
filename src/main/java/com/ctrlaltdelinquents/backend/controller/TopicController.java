@@ -26,6 +26,10 @@ import java.util.List;
 @RequestMapping("/api/topic")
 public class TopicController {
     private final TopicRepository topicRepository;
+    
+    @Autowired
+    private ModuleRepository moduleRepository;
+
 
     public TopicController(TopicRepository topicRepository) {
         this.topicRepository = topicRepository;
