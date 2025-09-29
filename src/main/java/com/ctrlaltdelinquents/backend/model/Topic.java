@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Setter
@@ -35,4 +36,7 @@ public class Topic {
 
     @JoinColumn(name = "course_code")
     private String course_code;
+
+    @Column
+    private BigDecimal hours;
 }
