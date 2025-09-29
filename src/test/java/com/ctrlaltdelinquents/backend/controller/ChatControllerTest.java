@@ -1,6 +1,5 @@
 package com.ctrlaltdelinquents.backend.controller;
 
-import com.ctrlaltdelinquents.backend.controller.ChatController;
 import com.ctrlaltdelinquents.backend.model.Chat;
 import com.ctrlaltdelinquents.backend.model.User;
 import com.ctrlaltdelinquents.backend.repo.ChatRepo;

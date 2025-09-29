@@ -22,4 +22,5 @@ public class SupabaseConfig {
     public String getSupabaseJwtSecret() {
         return supabaseJwtSecret;
     }
+
 }
