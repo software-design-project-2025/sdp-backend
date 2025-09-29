@@ -1,6 +1,7 @@
 package com.ctrlaltdelinquents.backend.controller;
 
 import com.ctrlaltdelinquents.backend.model.Topic;
+import com.ctrlaltdelinquents.backend.repo.ModuleRepo;
 import com.ctrlaltdelinquents.backend.repo.ModuleRepository;
 import com.ctrlaltdelinquents.backend.repo.TopicRepository;
 import jakarta.validation.Valid;
@@ -22,6 +23,7 @@ public class TopicController {
     public TopicController(TopicRepository topicRepo) {
         this.topicRepo = topicRepo;
     }
+
 
     @PostMapping("/new")
     public ResponseEntity<?> createTopic(@Valid @RequestBody(required = false) Topic topic, BindingResult result) {
