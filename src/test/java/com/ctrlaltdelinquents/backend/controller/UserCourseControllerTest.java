@@ -1,6 +1,5 @@
 package com.ctrlaltdelinquents.backend.controller;
 
-import com.ctrlaltdelinquents.backend.controller.UserCourseController;
 import com.ctrlaltdelinquents.backend.repo.UserCourseRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,7 +22,7 @@ class UserCourseControllerTest {
 
         ResponseEntity<?> response = controller.getAllUserCourses("1");
 
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getStatusCode().value()).isEqualTo(200);
 
         Map<String, List<String>> body = (Map<String, List<String>>) response.getBody();
         assertThat(body).containsKey("courses");
@@ -37,7 +36,7 @@ class UserCourseControllerTest {
 
         ResponseEntity<?> response = controller.getAllUserCourses("2");
 
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getStatusCode().value()).isEqualTo(200);
 
         Map<String, List<String>> body = (Map<String, List<String>>) response.getBody();
         assertThat(body.get("courses")).containsExactly("CS101", "CS102");
@@ -50,7 +49,7 @@ class UserCourseControllerTest {
 
         ResponseEntity<?> response = controller.getAllUserCourses("3");
 
-        assertThat(response.getStatusCodeValue()).isEqualTo(404);
+        assertThat(response.getStatusCode().value()).isEqualTo(404);
 
         Map<String, String> body = (Map<String, String>) response.getBody();
         assertThat(body.get("error")).isEqualTo("User has no courses with id 3");
@@ -63,7 +62,7 @@ class UserCourseControllerTest {
 
         ResponseEntity<?> response = controller.getAllUserCourses("4");
 
-        assertThat(response.getStatusCodeValue()).isEqualTo(404);
+        assertThat(response.getStatusCode().value()).isEqualTo(404);
 
         Map<String, String> body = (Map<String, String>) response.getBody();
         assertThat(body.get("error")).isEqualTo("User has no courses with id 4");
@@ -76,7 +75,7 @@ class UserCourseControllerTest {
 
         ResponseEntity<?> response = controller.getAllUserCourses("5");
 
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getStatusCode().value()).isEqualTo(200);
 
         Map<String, ?> body = (Map<String, ?>) response.getBody();
         assertThat(body).containsKey("courses");

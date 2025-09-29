@@ -1,6 +1,5 @@
 package com.ctrlaltdelinquents.backend.controller;
 
-import com.ctrlaltdelinquents.backend.controller.ModuleController;
 import com.ctrlaltdelinquents.backend.model.Module;
 import com.ctrlaltdelinquents.backend.repo.ModuleRepo;
 import org.junit.jupiter.api.DisplayName;
