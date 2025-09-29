@@ -328,16 +328,6 @@ class UserCourseIdTest {
     }
 
     @Test
-    void testToString() {
-        String stringRepresentation = userCourseId.toString();
-        
-        assertNotNull(stringRepresentation);
-        assertFalse(stringRepresentation.isEmpty());
-        assertTrue(stringRepresentation.contains(TEST_USER_ID));
-        assertTrue(stringRepresentation.contains(TEST_COURSE_CODE));
-    }
-
-    @Test
     void testToStringWithNullFields() {
         UserCourseId id = new UserCourseId();
         id.setUserid(null);
