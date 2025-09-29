@@ -1,5 +1,15 @@
 package com.ctrlaltdelinquents.backend.controller;
 
+import com.ctrlaltdelinquents.backend.model.Topic;
+import com.ctrlaltdelinquents.backend.repo.ModuleRepo;
+import com.ctrlaltdelinquents.backend.repo.ModuleRepository;
+import com.ctrlaltdelinquents.backend.repo.TopicRepository;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import com.ctrlaltdelinquents.backend.dto.ProgressStats;
 import com.ctrlaltdelinquents.backend.dto.WeeklyStudyStats;
 import com.ctrlaltdelinquents.backend.model.Topic;
@@ -10,7 +20,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 
 @RestController
@@ -93,6 +102,31 @@ public class TopicController {
             // It's good practice to log the exception
             // e.g., log.error("Error fetching weekly study hours for user: {}", userId, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+  
+    @PostMapping("/new")
+    public ResponseEntity<?> createTopic(@Valid @RequestBody(required = false) Topic topic, BindingResult result) {
+        if (topic == null) {
+            return ResponseEntity.badRequest().body("No topic data provided.");
+        }
+
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().body("Invalid/Missing topic data.");
+        }
+
+        if (!moduleRepository.existsByCourseCode(topic.getCourse_code())) {
+            return ResponseEntity.badRequest()
+                    .body("No such course with course_code: " + topic.getCourse_code());
+        }
+
+
+        try {
+            Topic savedTopic = topicRepo.save(topic);
+            return ResponseEntity.ok(savedTopic);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to create topic: " + e.getMessage());
         }
     }
 

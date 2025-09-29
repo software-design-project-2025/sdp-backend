@@ -22,6 +22,7 @@ import java.util.List;
 @RequestMapping("/api/chat")
 public class ChatController {
 
+
     @Autowired
     private final ChatRepo chatRepo;
 
@@ -38,6 +39,7 @@ public class ChatController {
     public List<Chat> getChatsByUser(@RequestParam String userid) {
         return chatRepo.findByUser(userid);
     }
+
 
     // POST a new user
     @PostMapping("/createChat")

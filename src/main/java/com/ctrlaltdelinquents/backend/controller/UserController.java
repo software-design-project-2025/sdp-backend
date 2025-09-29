@@ -1,4 +1,3 @@
-// src/main/java/com/ctrlaltdelinquents/backend/controller/UserController.java
 package com.ctrlaltdelinquents.backend.controller;
 
 import com.ctrlaltdelinquents.backend.dto.UserProgressStats;

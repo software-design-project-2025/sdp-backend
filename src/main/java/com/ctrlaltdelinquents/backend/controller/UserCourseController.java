@@ -1,4 +1,5 @@
 package com.ctrlaltdelinquents.backend.controller;
+
 import com.ctrlaltdelinquents.backend.model.UserCourse;
 import com.ctrlaltdelinquents.backend.repo.UserCourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +15,8 @@ import java.util.*;
 @RestController
 @RequestMapping("api/courses")
 public class UserCourseController {
-   @Autowired
-   private UserCourseRepository userCourseRepository;
+    @Autowired
+    private UserCourseRepository userCourseRepository;
 
    @GetMapping("/{id}")
    public ResponseEntity<?> getAllUserCourses(@PathVariable String id) {

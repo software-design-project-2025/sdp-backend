@@ -1,5 +1,6 @@
 package com.ctrlaltdelinquents.backend.repo;
 
+
 import com.ctrlaltdelinquents.backend.dto.ProgressStats;
 import com.ctrlaltdelinquents.backend.dto.WeeklyStudyStats;
 import com.ctrlaltdelinquents.backend.model.Topic;

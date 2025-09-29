@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    
     steps:
       - uses: actions/checkout@v4
 
@@ -22,8 +22,16 @@ jobs:
       - name: Make Gradle wrapper executable
         run: chmod +x ./gradlew
 
-      - name: Build and run tests
+      - name: Build and run tests with environment variables
         run: ./gradlew clean build jacocoTestReport
+        env:
+          PGURL: ${{ secrets.PGURL }}
+          PGUSERNAME: ${{ secrets.PGUSERNAME }}
+          PGDATABASE: ${{ secrets.PGDATABASE }}
+          PGPASSWORD: ${{ secrets.PGPASSWORD }}
+          API_KEY_ADMIN: ${{ secrets.API_KEY_ADMIN }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_JWT_SECRET: ${{ secrets.SUPABASE_JWT_SECRET }}
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
