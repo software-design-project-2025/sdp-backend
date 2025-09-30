@@ -11,6 +11,7 @@ import lombok.Setter;
 public class Chat {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-increment
     @Column(name = "chatid")
     private int chatid;
 

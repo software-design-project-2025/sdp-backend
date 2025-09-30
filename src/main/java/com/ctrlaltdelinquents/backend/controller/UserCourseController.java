@@ -1,10 +1,15 @@
 package com.ctrlaltdelinquents.backend.controller;
 
+<<<<<<< HEAD
 //import com.ctrlaltdelinquents.backend.model.UserCourse;
 import com.ctrlaltdelinquents.backend.model.UserCourse;
 import com.ctrlaltdelinquents.backend.repo.TopicRepository;
+=======
+import com.ctrlaltdelinquents.backend.model.UserCourse;
+>>>>>>> 5bf65aaa20a2a01f3e460a717f1853ddb4b9944a
 import com.ctrlaltdelinquents.backend.repo.UserCourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -18,25 +23,45 @@ public class UserCourseController {
     @Autowired
     private UserCourseRepository userCourseRepository;
 
+<<<<<<< HEAD
     @Autowired
     private TopicRepository topicRepository;
 
     public UserCourseController(UserCourseRepository userCourseRepository) {
         this.userCourseRepository = userCourseRepository;
     }
+=======
+   @GetMapping("/{id}")
+   public ResponseEntity<?> getAllUserCourses(@PathVariable String id) {
+       List<String> courses = userCourseRepository.findCourseCodesByUserId(id);
+>>>>>>> 5bf65aaa20a2a01f3e460a717f1853ddb4b9944a
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getAllUserCourses(@PathVariable int id) {
-        List<String> courses = userCourseRepository.findCourseCodesByUserId(id);
+       if (courses == null || courses.isEmpty()) {
+           Map<String, String> response = new HashMap<>();
+           response.put("error", "User has no courses with id " + id);
+           return ResponseEntity.status(404).body(response);
+       } else {
+           Map<String, List<String>> response = new HashMap<>();
+           response.put("courses", courses);
+           return ResponseEntity.ok(response);
+       }
+   }
 
-        if (courses == null || courses.isEmpty()) {
-            Map<String, String> response = new HashMap<>();
-            response.put("error", "User has no courses with id " + id);
-            return ResponseEntity.status(404).body(response);
-        } else {
-            Map<String, List<String>> response = new HashMap<>();
-            response.put("courses", courses);
-            return ResponseEntity.ok(response);
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllUsersCourses() {
+        try {
+            List<UserCourse> userCourses = userCourseRepository.findAll();
+
+            if (userCourses.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Error: No user courses found");
+            } else {
+                return ResponseEntity.ok(userCourses);
+            }
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error: Failed to fetch user courses" + e.getMessage());
         }
     }
 
