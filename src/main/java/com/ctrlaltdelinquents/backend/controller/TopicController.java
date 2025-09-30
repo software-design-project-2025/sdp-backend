@@ -31,8 +31,12 @@ public class TopicController {
     private ModuleRepository moduleRepository;
 
 
-    public TopicController(TopicRepository topicRepository) {
+    @Autowired
+    private final ModuleRepository moduleRepository;
+
+    public TopicController(TopicRepository topicRepository, ModuleRepository moduleRepository) {
         this.topicRepository = topicRepository;
+        this.moduleRepository = moduleRepository;
     }
 
     @GetMapping("/{userid}")
@@ -133,5 +137,4 @@ public class TopicController {
                     .body("Failed to create topic: " + e.getMessage());
         }
     }
-
 }
