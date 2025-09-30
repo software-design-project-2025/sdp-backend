@@ -5,26 +5,21 @@ import com.ctrlaltdelinquents.backend.dto.ProgressStats;
 import com.ctrlaltdelinquents.backend.dto.WeeklyStudyStats;
 import com.ctrlaltdelinquents.backend.model.Topic;
 import org.springframework.data.jpa.repository.JpaRepository;
-<<<<<<< HEAD
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+
 
 @Repository
 public interface TopicRepository extends JpaRepository<Topic, String> {
+
     @Modifying
     @Transactional
     @Query("DELETE FROM Topic t WHERE t.userid = :userid AND t.course_code = :courseCode")
     void deleteByUseridAndCourseCode(@Param("userid") String userid, @Param("courseCode") String courseCode);
-=======
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
-import java.util.List;
-
-public interface TopicRepository extends JpaRepository<Topic, Integer> {
     List<Topic> findAllByUserid(String userid);
     List<Topic> findAllByUseridAndStatus(String userid, String status);
 
@@ -101,5 +96,4 @@ public interface TopicRepository extends JpaRepository<Topic, Integer> {
         Weeks.week_start_date ASC
     """, nativeQuery = true)
     List<WeeklyStudyStats> getWeeklyStudyHours(@Param("userId") String userId);
->>>>>>> 5bf65aaa20a2a01f3e460a717f1853ddb4b9944a
 }

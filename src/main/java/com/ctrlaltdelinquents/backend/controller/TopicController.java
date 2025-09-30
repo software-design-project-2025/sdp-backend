@@ -27,8 +27,12 @@ import java.util.List;
 public class TopicController {
     private final TopicRepository topicRepository;
 
-    public TopicController(TopicRepository topicRepository) {
+    @Autowired
+    private final ModuleRepository moduleRepository;
+
+    public TopicController(TopicRepository topicRepository, ModuleRepository moduleRepository) {
         this.topicRepository = topicRepository;
+        this.moduleRepository = moduleRepository;
     }
 
     @GetMapping("/{userid}")
@@ -122,7 +126,7 @@ public class TopicController {
 
 
         try {
-            Topic savedTopic = topicRepo.save(topic);
+            Topic savedTopic = topicRepository.save(topic);
             return ResponseEntity.ok(savedTopic);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

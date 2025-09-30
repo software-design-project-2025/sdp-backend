@@ -5,6 +5,8 @@ import com.ctrlaltdelinquents.backend.model.User;
 import com.ctrlaltdelinquents.backend.repo.UserRepository;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 
 import org.springframework.http.HttpStatus;
@@ -80,4 +82,72 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @PutMapping("/put/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody User updatedUser) {
+        try {
+            Optional<User> existingUserOpt = userRepository.findById(id);
+            if (existingUserOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Error: User with id " + id + " not found");
+            }
+
+            User existingUser = existingUserOpt.get();
+
+            existingUser.setRole(updatedUser.getRole());
+            existingUser.setDegreeid(updatedUser.getDegreeid());
+            existingUser.setYearofstudy(updatedUser.getYearofstudy());
+            existingUser.setBio(updatedUser.getBio());
+            existingUser.setStatus(updatedUser.getStatus());
+            existingUser.setProfile_picture(updatedUser.getProfile_picture());
+
+            User savedUser = userRepository.save(existingUser);
+            return ResponseEntity.ok(savedUser);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error: Failed to update user: " + e.getMessage());
+        }
+    }
+
+    @PatchMapping("/patch/{id}")
+    public ResponseEntity<?> patchUser(@PathVariable String id, @RequestBody Map<String, Object> updates) {
+        try {
+            Optional<User> existingUserOpt = userRepository.findById(id);
+            if (existingUserOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Error: User with id " + id + " not found");
+            }
+
+            User existingUser = existingUserOpt.get();
+
+            // Apply partial updates if present in the map
+            if (updates.containsKey("role")) {
+                existingUser.setRole((String) updates.get("role"));
+            }
+            if (updates.containsKey("degreeid")) {
+                existingUser.setDegreeid((Integer) updates.get("degreeid"));
+            }
+            if (updates.containsKey("yearofstudy")) {
+                existingUser.setYearofstudy((Integer) updates.get("yearofstudy"));
+            }
+            if (updates.containsKey("bio")) {
+                existingUser.setBio((String) updates.get("bio"));
+            }
+            if (updates.containsKey("status")) {
+                existingUser.setStatus((String) updates.get("status"));
+            }
+            if (updates.containsKey("profile_picture")) {
+                existingUser.setProfile_picture((String) updates.get("profile_picture"));
+            }
+
+            User savedUser = userRepository.save(existingUser);
+            return ResponseEntity.ok(savedUser);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error: Failed to patch user: " + e.getMessage());
+        }
+    }
+
 }

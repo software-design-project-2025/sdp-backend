@@ -1,12 +1,8 @@
 package com.ctrlaltdelinquents.backend.controller;
 
-<<<<<<< HEAD
-//import com.ctrlaltdelinquents.backend.model.UserCourse;
 import com.ctrlaltdelinquents.backend.model.UserCourse;
 import com.ctrlaltdelinquents.backend.repo.TopicRepository;
-=======
-import com.ctrlaltdelinquents.backend.model.UserCourse;
->>>>>>> 5bf65aaa20a2a01f3e460a717f1853ddb4b9944a
+
 import com.ctrlaltdelinquents.backend.repo.UserCourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,18 +19,15 @@ public class UserCourseController {
     @Autowired
     private UserCourseRepository userCourseRepository;
 
-<<<<<<< HEAD
     @Autowired
     private TopicRepository topicRepository;
 
     public UserCourseController(UserCourseRepository userCourseRepository) {
         this.userCourseRepository = userCourseRepository;
     }
-=======
    @GetMapping("/{id}")
    public ResponseEntity<?> getAllUserCourses(@PathVariable String id) {
-       List<String> courses = userCourseRepository.findCourseCodesByUserId(id);
->>>>>>> 5bf65aaa20a2a01f3e460a717f1853ddb4b9944a
+       List<String> courses = userCourseRepository.findCourseCodesByUserid(id);
 
        if (courses == null || courses.isEmpty()) {
            Map<String, String> response = new HashMap<>();
