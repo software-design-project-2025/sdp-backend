@@ -11,7 +11,7 @@ import lombok.Setter;
 public class GroupMembers {
     @Id
     @Column(name = "groupid")
-    private int groupid;
+    private Integer groupid;
 
     @Id
     @Column(name = "userid")

@@ -39,5 +39,5 @@ public class Session {
     private String creatorid;
 
     @Column(name = "groupid")
-    private int groupid;
+    private Integer groupid;
 }
