@@ -25,3 +25,17 @@
 //         @Query("SELECT s FROM Session s WHERE s.creatorId = :userId AND s.startTime > CURRENT_TIMESTAMP")
 //         List<Session> findUpcomingSessions(@Param("userId") String userId);
 // }//
+
+package com.ctrlaltdelinquents.backend.repo;
+
+import com.ctrlaltdelinquents.backend.model.Session;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface SessionRepo extends JpaRepository<Session, Integer> {
+    List<Session> findByCreatorid(String creatorId);
+    List<Session> findByGroupid(int groupId);
+}
