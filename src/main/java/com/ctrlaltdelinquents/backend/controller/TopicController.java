@@ -27,6 +27,10 @@ import java.util.Optional;
 @RequestMapping("/api/topic")
 public class TopicController {
     private final TopicRepository topicRepository;
+    
+    @Autowired
+    private ModuleRepository moduleRepository;
+
 
     @Autowired
     private final ModuleRepository moduleRepository;
