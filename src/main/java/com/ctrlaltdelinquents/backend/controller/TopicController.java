@@ -31,9 +31,6 @@ public class TopicController {
     private ModuleRepository moduleRepository;
 
 
-    @Autowired
-    private final ModuleRepository moduleRepository;
-
     public TopicController(TopicRepository topicRepository, ModuleRepository moduleRepository) {
         this.topicRepository = topicRepository;
         this.moduleRepository = moduleRepository;
