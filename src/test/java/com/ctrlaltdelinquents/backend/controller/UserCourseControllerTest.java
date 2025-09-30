@@ -1,5 +1,7 @@
 package com.ctrlaltdelinquents.backend.controller;
 
+
+import com.ctrlaltdelinquents.backend.controller.UserCourseController;
 import com.ctrlaltdelinquents.backend.repo.UserCourseRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +20,8 @@ class UserCourseControllerTest {
     @Test
     @DisplayName("Should return one course for user")
     void getAllUserCourses_returnsOneCourse() {
-        when(userCourseRepository.findCourseCodesByUserid(1)).thenReturn(List.of("CS101"));
+
+        when(userCourseRepository.findCourseCodesByUserId(1)).thenReturn(List.of("CS101"));
 
         ResponseEntity<?> response = controller.getAllUserCourses(1);
 
@@ -32,7 +35,8 @@ class UserCourseControllerTest {
     @Test
     @DisplayName("Should return multiple courses for user")
     void getAllUserCourses_returnsMultipleCourses() {
-        when(userCourseRepository.findCourseCodesByUserid(2)).thenReturn(List.of("CS101", "CS102"));
+
+        when(userCourseRepository.findCourseCodesByUserId(2)).thenReturn(List.of("CS101", "CS102"));
 
         ResponseEntity<?> response = controller.getAllUserCourses(2);
 
@@ -45,7 +49,8 @@ class UserCourseControllerTest {
     @Test
     @DisplayName("Should return 404 when user has no courses")
     void getAllUserCourses_returnsNotFoundForEmptyList() {
-        when(userCourseRepository.findCourseCodesByUserid(3)).thenReturn(Collections.emptyList());
+
+        when(userCourseRepository.findCourseCodesByUserId(3)).thenReturn(Collections.emptyList());
 
         ResponseEntity<?> response = controller.getAllUserCourses(3);
 
@@ -58,7 +63,8 @@ class UserCourseControllerTest {
     @Test
     @DisplayName("Should return 404 when repository returns null")
     void getAllUserCourses_returnsNotFoundForNullList() {
-        when(userCourseRepository.findCourseCodesByUserid(4)).thenReturn(null);
+
+        when(userCourseRepository.findCourseCodesByUserId(4)).thenReturn(null);
 
         ResponseEntity<?> response = controller.getAllUserCourses(4);
 
@@ -71,7 +77,8 @@ class UserCourseControllerTest {
     @Test
     @DisplayName("Should return correct response format with 'courses' key")
     void getAllUserCourses_responseContainsCoursesKey() {
-        when(userCourseRepository.findCourseCodesByUserid(5)).thenReturn(List.of("CS105"));
+
+        when(userCourseRepository.findCourseCodesByUserId(5)).thenReturn(List.of("CS105"));
 
         ResponseEntity<?> response = controller.getAllUserCourses(5);
 

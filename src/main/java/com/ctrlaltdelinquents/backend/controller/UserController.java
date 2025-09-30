@@ -149,5 +149,4 @@ public class UserController {
                     .body("Error: Failed to patch user: " + e.getMessage());
         }
     }
-
 }
