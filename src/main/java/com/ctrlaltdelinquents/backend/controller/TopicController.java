@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/topic")
@@ -133,4 +134,61 @@ public class TopicController {
                     .body("Failed to create topic: " + e.getMessage());
         }
     }
+
+    @PatchMapping("/patch/{topicid}")
+    public ResponseEntity<?> updateTopic(@PathVariable Integer topicid, @RequestBody Topic updatedData) {
+        Optional<Topic> existingTopicOptional = topicRepository.findById(topicid);
+
+        if (existingTopicOptional.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Topic with ID " + topicid + " not found.");
+        }
+
+        Topic existingTopic = existingTopicOptional.get();
+
+        // Update only non-null fields
+        if (updatedData.getUserid() != null) {
+            existingTopic.setUserid(updatedData.getUserid());
+        }
+
+        if (updatedData.getTitle() != null) {
+            existingTopic.setTitle(updatedData.getTitle());
+        }
+
+        if (updatedData.getDescription() != null) {
+            existingTopic.setDescription(updatedData.getDescription());
+        }
+
+        if (updatedData.getStart_date() != null) {
+            existingTopic.setStart_date(updatedData.getStart_date());
+        }
+
+        if (updatedData.getEnd_date() != null) {
+            existingTopic.setEnd_date(updatedData.getEnd_date());
+        }
+
+        if (updatedData.getStatus() != null) {
+            existingTopic.setStatus(updatedData.getStatus());
+        }
+
+        if (updatedData.getCourse_code() != null) {
+            if (!moduleRepository.existsByCourseCode(updatedData.getCourse_code())) {
+                return ResponseEntity.badRequest()
+                        .body("No such course with course_code: " + updatedData.getCourse_code());
+            }
+            existingTopic.setCourse_code(updatedData.getCourse_code());
+        }
+
+        if (updatedData.getHours() != null) {
+            existingTopic.setHours(updatedData.getHours());
+        }
+
+        try {
+            Topic savedTopic = topicRepository.save(existingTopic);
+            return ResponseEntity.ok(savedTopic);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to update topic: " + e.getMessage());
+        }
+    }
+
 }

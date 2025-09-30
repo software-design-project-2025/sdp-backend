@@ -13,8 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 
+
 @Repository
-public interface TopicRepository extends JpaRepository<Topic, String> {
+public interface TopicRepository extends JpaRepository<Topic, Integer> {
 
     @Modifying
     @Transactional
