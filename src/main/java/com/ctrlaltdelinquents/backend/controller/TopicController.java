@@ -49,5 +49,4 @@ public class TopicController {
                     .body("Failed to create topic: " + e.getMessage());
         }
     }
-
 }

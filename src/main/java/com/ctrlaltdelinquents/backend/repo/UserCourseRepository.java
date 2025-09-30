@@ -10,4 +10,8 @@ import java.util.List;
 public interface UserCourseRepository extends JpaRepository<UserCourse, String> {
     @Query(value = "SELECT course_code FROM user_course WHERE userid = :userid", nativeQuery = true)
     List<String> findCourseCodesByUserId(@Param("userid") int userid);
+    void deleteByUserid(String userid);
+
+    List<UserCourse> findByUserid(String id);
+
 }
