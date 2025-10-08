@@ -46,16 +46,16 @@ public class UserCourseController {
 //    }
    @GetMapping("/{id}")
    public ResponseEntity<?> getAllUserCourses(@PathVariable String id) {
-       List<String> courses = userCourseRepository.findCourseCodesByUserid(id);
+       List<UserCourse> courses = userCourseRepository.findCourseCodesByUserid(id);
 
        if (courses == null || courses.isEmpty()) {
            Map<String, String> response = new HashMap<>();
            response.put("error", "User has no courses with id " + id);
            return ResponseEntity.status(404).body(response);
        } else {
-           Map<String, List<String>> response = new HashMap<>();
-           response.put("courses", courses);
-           return ResponseEntity.ok(response);
+//           Map<String, List<UserCourse>> response = new HashMap<>();
+//           response.put("courses", courses);
+           return ResponseEntity.ok(courses);
        }
    }
 
@@ -154,20 +154,20 @@ public class UserCourseController {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteUserCourse(@PathVariable String id, @RequestBody Map<String, String> body) {
+    @DeleteMapping("/delete/{id}/{course_code}")
+    public ResponseEntity<?> deleteUserCourse(@PathVariable String id, @PathVariable String course_code) {
         try {
-            String courseCode = body.get("courseCode");
+            //String courseCode = body.get("courseCode");
 
-            if (courseCode == null || courseCode.isEmpty()) {
+            if (course_code == null || course_code.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body("Error: courseCode is required in the request body.");
             }
 
-            Optional<UserCourse> existing = userCourseRepository.findByUseridAndCourseCode(id, courseCode);
+            Optional<UserCourse> existing = userCourseRepository.findByUseridAndCourseCode(id, course_code);
             if (existing.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body("Error: No user-course entry found for user '" + id + "' and courseCode '" + courseCode + "'.");
+                        .body("Error: No user-course entry found for user '" + id + "' and courseCode '" + course_code + "'.");
             }
 
             userCourseRepository.delete(existing.get());
@@ -175,7 +175,7 @@ public class UserCourseController {
             Map<String, Object> response = new HashMap<>();
             response.put("message", "Successfully deleted user course.");
             response.put("userid", id);
-            response.put("courseCode", courseCode);
+            response.put("courseCode", course_code);
 
             return ResponseEntity.ok(response);
 

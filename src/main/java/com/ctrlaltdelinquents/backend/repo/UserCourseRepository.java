@@ -15,7 +15,7 @@ public interface UserCourseRepository extends JpaRepository<UserCourse, String> 
 
     List<UserCourse> findByUserid(String id);
 
-    List<String> findCourseCodesByUserid(@Param("userid") String userid);
+    List<UserCourse> findCourseCodesByUserid(@Param("userid") String userid);
 
     Optional<UserCourse> findByUseridAndCourseCode(String id, String courseCode);
 }
