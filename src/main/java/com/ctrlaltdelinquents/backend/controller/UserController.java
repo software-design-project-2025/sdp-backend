@@ -9,15 +9,21 @@ import java.util.Map;
 import java.util.Optional;
 
 
+import com.ctrlaltdelinquents.backend.service.AzureBlobStorageService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
     private final UserRepository userRepository;
+
+    @Autowired
+    private AzureBlobStorageService azureBlobStorageService;
 
     public UserController(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -147,6 +153,36 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error: Failed to patch user: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/{userId}/profile-picture")
+    public ResponseEntity<?> uploadProfilePicture(
+            @PathVariable String userId,
+            @RequestParam("file") MultipartFile file) {
+
+        try {
+            // Step A: Upload the file to Azure Blob Storage using the service
+            String imageUrl = azureBlobStorageService.upload(file, userId);
+
+            // Step B: Find the user in your database
+            Optional<User> userOptional = userRepository.findById(userId);
+
+            if (userOptional.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found with id: " + userId);
+            }
+
+            // Step C: Update the user's profile_picture field with the new URL
+            User user = userOptional.get();
+            user.setProfile_picture(imageUrl);
+            userRepository.save(user); // Save the updated user to the database
+
+            // Step D: Return a success response with the new URL to the frontend
+            return ResponseEntity.ok(Map.of("imageUrl", imageUrl));
+
+        } catch (Exception e) {
+            // Log the error for debugging
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload file.");
         }
     }
 }

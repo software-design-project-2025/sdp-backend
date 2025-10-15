@@ -32,6 +32,9 @@ jobs:
           API_KEY_ADMIN: ${{ secrets.API_KEY_ADMIN }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_JWT_SECRET: ${{ secrets.SUPABASE_JWT_SECRET }}
+          AZURECONNECTIONSTRING: ${{ secrets.AZURECONNECTIONSTRING }}
+          AZURESTORAGENAME: ${{ secrets.AZURESTORAGENAME }}
+
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
