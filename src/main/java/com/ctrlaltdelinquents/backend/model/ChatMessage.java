@@ -27,4 +27,7 @@ public class ChatMessage {
 
     @Column(name = "message")
     private String message;
+
+    @Column(name = "read_status")
+    private boolean read_status;
 }
