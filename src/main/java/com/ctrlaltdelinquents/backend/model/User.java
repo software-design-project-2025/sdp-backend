@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Table(name = "\"user\"")  // Keep team's table name
 public class User {
-
+    
     @Id
     private String userid;
 

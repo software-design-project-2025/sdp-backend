@@ -13,4 +13,12 @@ public interface ChatRepo extends JpaRepository<Chat, Integer> {
 
     @Query("SELECT c FROM Chat c WHERE (c.user1.userid = :user1Id AND c.user2.userid = :user2Id) OR (c.user1.userid = :user2Id AND c.user2.userid = :user1Id)")
     List<Chat> findChat(@Param("user1Id") String user1Id, @Param("user2Id") String user2Id);
+    
+    @Query("SELECT COUNT(m) FROM ChatMessage m " +
+           "WHERE m.chatid IN " +
+           "(SELECT c.chatid FROM Chat c WHERE c.user1.userid = :userid OR c.user2.userid = :userid) " +
+           "AND m.senderid != :userid " +
+           "AND m.read_status = false")
+    int countUnreadMessagesForUser(@Param("userid") String userid);
+
 }

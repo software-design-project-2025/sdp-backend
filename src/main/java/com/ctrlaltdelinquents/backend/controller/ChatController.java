@@ -1,8 +1,10 @@
 package com.ctrlaltdelinquents.backend.controller;
 
 import com.ctrlaltdelinquents.backend.model.Chat;
+import com.ctrlaltdelinquents.backend.model.ChatMessage;
 import com.ctrlaltdelinquents.backend.model.User;
 import com.ctrlaltdelinquents.backend.repo.ChatRepo;
+import com.ctrlaltdelinquents.backend.repo.ChatMessageRepo;
 import com.ctrlaltdelinquents.backend.repo.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,14 +24,16 @@ import java.util.List;
 @RequestMapping("/api/chat")
 public class ChatController {
 
+
     @Autowired
     private final ChatRepo chatRepo;
-
     private final UserRepository userRepository;
+    private final ChatMessageRepo chatMessageRepo;
 
-    public ChatController(ChatRepo chatRepo, UserRepository userRepository) {
+    public ChatController(ChatRepo chatRepo, UserRepository userRepository, ChatMessageRepo chatMessageRepo) {
         this.chatRepo = chatRepo;
         this.userRepository = userRepository;
+        this.chatMessageRepo = chatMessageRepo;
     }
 
     // GET all chats
@@ -38,6 +42,7 @@ public class ChatController {
     public List<Chat> getChatsByUser(@RequestParam String userid) {
         return chatRepo.findByUser(userid);
     }
+
 
     // POST a new user
     @PostMapping("/createChat")
@@ -64,5 +69,11 @@ public class ChatController {
         newChat.setUser2(managedUser2);  // Not transient!
 
         return chatRepo.save(newChat);
+    }
+
+    @GetMapping("/getTotalUnreadCount")  
+    @ResponseBody
+    public int getUnreadMessageCount(@RequestParam String userid) {
+        return chatRepo.countUnreadMessagesForUser(userid);
     }
 }

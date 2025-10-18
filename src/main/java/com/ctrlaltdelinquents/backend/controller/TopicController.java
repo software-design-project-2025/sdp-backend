@@ -1,5 +1,15 @@
 package com.ctrlaltdelinquents.backend.controller;
 
+import com.ctrlaltdelinquents.backend.model.Topic;
+import com.ctrlaltdelinquents.backend.repo.ModuleRepo;
+import com.ctrlaltdelinquents.backend.repo.ModuleRepository;
+import com.ctrlaltdelinquents.backend.repo.TopicRepository;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import com.ctrlaltdelinquents.backend.dto.ProgressStats;
 import com.ctrlaltdelinquents.backend.dto.WeeklyStudyStats;
 import com.ctrlaltdelinquents.backend.model.Topic;
@@ -11,16 +21,20 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/topic")
 public class TopicController {
     private final TopicRepository topicRepository;
+    
+    @Autowired
+    private ModuleRepository moduleRepository;
 
-    public TopicController(TopicRepository topicRepository) {
+
+    public TopicController(TopicRepository topicRepository, ModuleRepository moduleRepository) {
         this.topicRepository = topicRepository;
+        this.moduleRepository = moduleRepository;
     }
 
     @GetMapping("/{userid}")
@@ -95,6 +109,16 @@ public class TopicController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+  
+    @PostMapping("/new")
+    public ResponseEntity<?> createTopic(@Valid @RequestBody(required = false) Topic topic, BindingResult result) {
+        if (topic == null) {
+            return ResponseEntity.badRequest().body("No topic data provided.");
+        }
+
+        if (result.hasErrors()) {
+            return ResponseEntity.badRequest().body("Invalid/Missing topic data.");
+        }
 
     // Get number of topics completed in last 7 days
     @GetMapping("/topics/num-topics")
