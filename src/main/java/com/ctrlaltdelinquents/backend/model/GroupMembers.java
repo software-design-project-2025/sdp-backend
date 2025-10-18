@@ -8,10 +8,12 @@ import lombok.Setter;
 @Getter
 @Entity
 @Table(name = "group_members")
+@IdClass(GroupMemberId.class) // Specify the composite key class
 public class GroupMembers {
+
     @Id
     @Column(name = "groupid")
-    private int groupid;
+    private Integer groupid;
 
     @Id
     @Column(name = "userid")
