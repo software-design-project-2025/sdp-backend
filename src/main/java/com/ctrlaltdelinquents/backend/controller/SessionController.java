@@ -1,5 +1,7 @@
 package com.ctrlaltdelinquents.backend.controller;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
+
 import com.ctrlaltdelinquents.backend.model.Session;
 import com.ctrlaltdelinquents.backend.repo.SessionRepo;
 
@@ -12,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin(origins = "http://localhost:4200")
 public class SessionController {
 
     private final SessionRepo sessionRepo;
