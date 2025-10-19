@@ -8,22 +8,23 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @Entity
-@Table(name = "chat_doc")
+@Table(name = "chat_doc") // Matches your table name
 public class ChatDoc {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-increments the primary key
     @Column(name = "docid")
-    private int docid;
-
-    @JoinColumn(name = "chatid")
-    private int chatid;
-
-    @JoinColumn(name = "senderid")
-    private String senderid;
+    private Integer cdID;
 
     @Column(name = "sent_datetime")
-    private LocalDateTime sent_datetime;
+    private LocalDateTime sentDateTime;
+
+    @Column(name = "senderid")
+    private String senderID;
+
+    @Column(name = "chatid")
+    private Integer chatID;
 
     @Column(name = "doc")
-    private String doc;
+    private String doc; // This will store the URL to the document in Azure Blob Storage
 }

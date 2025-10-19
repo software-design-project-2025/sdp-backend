@@ -35,9 +35,9 @@ public class Session {
     @Column(name = "description")
     private String description;
 
-    @JoinColumn(name = "creatorid")
+    @Column(name = "creatorid")
     private String creatorid;
 
-    @JoinColumn(name = "groupid")
-    private int groupid;
+    @Column(name = "groupid")
+    private Integer groupid;
 }

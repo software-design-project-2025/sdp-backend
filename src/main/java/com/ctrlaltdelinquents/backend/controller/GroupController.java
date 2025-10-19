@@ -4,17 +4,26 @@ import com.ctrlaltdelinquents.backend.model.Group;
 import com.ctrlaltdelinquents.backend.model.GroupMembers;
 import com.ctrlaltdelinquents.backend.repo.GroupRepo;
 import com.ctrlaltdelinquents.backend.repo.GroupMembersRepo;
+import com.ctrlaltdelinquents.backend.repo.GroupRepo;
+import com.ctrlaltdelinquents.backend.service.GroupService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import com.ctrlaltdelinquents.backend.service.GroupService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+//@RequestMapping("/api/groups")
+@CrossOrigin(origins = {"http://localhost:4200", "https://witty-coast-007353203.1.azurestaticapps.net"})
 @RequestMapping("/api/auth/groups")
 public class GroupController {
 
     private final GroupRepo groupRepo;
     private final GroupMembersRepo groupMembersRepo;
+    private GroupService groupService;
 
     public GroupController(GroupRepo groupRepo, GroupMembersRepo groupMembersRepo) {
         this.groupRepo = groupRepo;
@@ -45,5 +54,11 @@ public class GroupController {
     @ResponseBody
     public List<Group> findGroupsByUserId(@RequestParam String userid) {
         return groupRepo.findByUser(userid);
+    }
+    
+    @GetMapping
+    public ResponseEntity<List<Group>> getAllGroups() {
+        List<Group> groups = groupService.getAllGroups();
+        return ResponseEntity.ok(groups);
     }
 }

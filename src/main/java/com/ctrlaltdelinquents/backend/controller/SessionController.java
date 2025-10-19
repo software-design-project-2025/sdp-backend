@@ -10,8 +10,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import com.ctrlaltdelinquents.backend.model.Session;
+import com.ctrlaltdelinquents.backend.service.SessionService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api")
+@CrossOrigin(origins = {"http://localhost:4200", "https://witty-coast-007353203.1.azurestaticapps.net"})
+
 public class SessionController {
 
     private final SessionRepo sessionRepo;
@@ -20,15 +31,73 @@ public class SessionController {
         this.sessionRepo = sessionRepo;
     }
 
+    @Autowired
+    private SessionService sessionService;
+
+    @GetMapping
+    public ResponseEntity<List<Session>> getAllSessions() {
+        List<Session> sessions = sessionService.getAllSessions();
+        return ResponseEntity.ok(sessions);
+    }
+
+    @GetMapping("/sessions/{id}")
+    public ResponseEntity<Session> getSessionById(@PathVariable Integer id) {
+        return sessionService.getSessionById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/sessions/creator/{creatorId}")
+    public ResponseEntity<List<Session>> getSessionsByCreator(@PathVariable String creatorId) {
+        List<Session> sessions = sessionService.getSessionsByCreator(creatorId);
+        return ResponseEntity.ok(sessions);
+    }
+
+    @GetMapping("/sessions/group/{groupId}")
+    public ResponseEntity<List<Session>> getSessionsByGroup(@PathVariable int groupId) {
+        List<Session> sessions = sessionService.getSessionsByGroup(groupId);
+        return ResponseEntity.ok(sessions);
+    }
+
+    @PostMapping
+    public ResponseEntity<Session> createSession(@RequestBody Session session) {
+        try {
+            Session createdSession = sessionService.createSession(session);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdSession);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PutMapping("/sessions/{id}")
+    public ResponseEntity<Session> updateSession(@PathVariable Integer id, @RequestBody Session session) {
+        try {
+            Session updatedSession = sessionService.updateSession(id, session);
+            return ResponseEntity.ok(updatedSession);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/sessions/{id}")
+    public ResponseEntity<Void> deleteSession(@PathVariable Integer id) {
+        try {
+            sessionService.deleteSession(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     // GET all upcoming sessions for a specific user
-    @GetMapping("/sessions/upcoming")
+    @GetMapping("/auth/sessions/upcoming")
     // @RequestBody
     public List<Session> getUpcomingSessions(@RequestParam String userId) {
         return sessionRepo.findUpcomingSessions(userId);
     }
 
     // GET total study hours for a user in the past 7 days
-    @GetMapping("/sessions/study-hours")
+    @GetMapping("/auth/sessions/study-hours")
     public StudyHoursResponse getStudyHoursLast7Days(@RequestParam String userId) {
         Double totalHours = sessionRepo.getActualStudyHoursLast7Days(userId);
 
@@ -40,7 +109,7 @@ public class SessionController {
     }
 
     // GET number of sessions attended by user in past 7 days
-    @GetMapping("/sessions/num-sessions")
+    @GetMapping("/auth/sessions/num-sessions")
     public SessionCountResponse getNumberOfSessionsAttended(@RequestParam String userId) {
         Integer sessionCount = sessionRepo.countSessionsAttendedLast7Days(userId);
 
@@ -122,3 +191,10 @@ public class SessionController {
         }
     }
 }
+//     // GET all upcoming sessions for a specific user
+//     @GetMapping("/sessions/upcoming")
+//     // @RequestBody
+//     public List<Session> getUpcomingSessions(@RequestParam String userId) {
+//         return sessionRepo.findUpcomingSessions(userId);
+//     }
+// }
