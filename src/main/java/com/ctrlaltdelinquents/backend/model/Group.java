@@ -11,8 +11,9 @@ import lombok.Setter;
 public class Group {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "groupid")
-    private int groupid;
+    private Integer groupid;
 
     @Column(name = "title")
     private String title;
@@ -21,8 +22,8 @@ public class Group {
     private String goal;
 
     @Column(name = "active")
-    private boolean active;
+    private boolean active = true;
 
-    @JoinColumn(name = "creatorid")
+    @Column(name = "creatorid")
     private String creatorid;
 }
