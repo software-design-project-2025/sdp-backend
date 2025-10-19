@@ -1,9 +1,10 @@
 package com.ctrlaltdelinquents.backend.controller;
 
 import com.ctrlaltdelinquents.backend.model.Topic;
-import com.ctrlaltdelinquents.backend.repo.ModuleRepo;
 import com.ctrlaltdelinquents.backend.repo.ModuleRepository;
 import com.ctrlaltdelinquents.backend.repo.TopicRepository;
+import com.ctrlaltdelinquents.backend.dto.ProgressStats;
+import com.ctrlaltdelinquents.backend.dto.WeeklyStudyStats;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,12 +26,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/topic")
+@CrossOrigin(origins = "http://localhost:4200")
 public class TopicController {
     private final TopicRepository topicRepository;
-    
+
     @Autowired
     private ModuleRepository moduleRepository;
-
 
     public TopicController(TopicRepository topicRepository, ModuleRepository moduleRepository) {
         this.topicRepository = topicRepository;
@@ -57,12 +58,10 @@ public class TopicController {
     public ResponseEntity<?> getCompletedTopics(@PathVariable String userid) {
         try {
             List<Topic> topics = topicRepository.findAllByUseridAndStatus(userid, "Completed");
-
             if (topics.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body("Error: No completed topics found for userid: " + userid);
             }
-
             return ResponseEntity.ok(topics);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -74,12 +73,10 @@ public class TopicController {
     public ResponseEntity<?> getInProgressTopics(@PathVariable String userid) {
         try {
             List<Topic> topics = topicRepository.findAllByUseridAndStatus(userid, "In Progress");
-
             if (topics.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body("Error: No in-progress topics found for userid: " + userid);
             }
-
             return ResponseEntity.ok(topics);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -93,7 +90,6 @@ public class TopicController {
             ProgressStats stats = topicRepository.getProgressStatsForUser(userId);
             return ResponseEntity.ok(stats);
         } catch (Exception e) {
-            // Log the exception details here for debugging
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -104,8 +100,6 @@ public class TopicController {
             List<WeeklyStudyStats> weeklyData = topicRepository.getWeeklyStudyHours(userId);
             return ResponseEntity.ok(weeklyData);
         } catch (Exception e) {
-            // It's good practice to log the exception
-            // e.g., log.error("Error fetching weekly study hours for user: {}", userId, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -115,23 +109,16 @@ public class TopicController {
         if (topic == null) {
             return ResponseEntity.badRequest().body("No topic data provided.");
         }
-
         if (result.hasErrors()) {
             return ResponseEntity.badRequest().body("Invalid/Missing topic data.");
         }
-
-        if (!moduleRepository.existsByCourseCode(topic.getCourse_code())) {
-            return ResponseEntity.badRequest()
-                    .body("No such course with course_code: " + topic.getCourse_code());
-        }
-
 
         try {
             Topic savedTopic = topicRepository.save(topic);
             return ResponseEntity.ok(savedTopic);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to create topic: " + e.getMessage());
+                    .body("Error: Failed to create topic: " + e.getMessage());
         }
     }
 
@@ -139,10 +126,7 @@ public class TopicController {
     @GetMapping("/topics/num-topics")
     public TopicCountResponse getNumberOfTopics(@RequestParam String userId) {
         Integer topicCount = topicRepository.countTopicsCompletedLast7Days(userId);
-
-        // Handle null case and return 0 if no topics found
         int count = topicCount != null ? topicCount : 0;
-
         return new TopicCountResponse(userId, count);
     }
 
@@ -159,7 +143,6 @@ public class TopicController {
             this.numTopics = numTopics;
         }
 
-        // Getters and setters
         public String getUserId() {
             return userId;
         }
@@ -176,5 +159,4 @@ public class TopicController {
             this.numTopics = numTopics;
         }
     }
-
 }
