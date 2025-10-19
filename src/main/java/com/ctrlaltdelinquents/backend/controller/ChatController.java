@@ -1,10 +1,8 @@
 package com.ctrlaltdelinquents.backend.controller;
 
 import com.ctrlaltdelinquents.backend.model.Chat;
-import com.ctrlaltdelinquents.backend.model.ChatMessage;
 import com.ctrlaltdelinquents.backend.model.User;
 import com.ctrlaltdelinquents.backend.repo.ChatRepo;
-import com.ctrlaltdelinquents.backend.repo.ChatMessageRepo;
 import com.ctrlaltdelinquents.backend.repo.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +26,12 @@ public class ChatController {
     @Autowired
     private final ChatRepo chatRepo;
     private final UserRepository userRepository;
-    private final ChatMessageRepo chatMessageRepo;
 
-    public ChatController(ChatRepo chatRepo, UserRepository userRepository, ChatMessageRepo chatMessageRepo) {
+
+    public ChatController(ChatRepo chatRepo, UserRepository userRepository) {
         this.chatRepo = chatRepo;
         this.userRepository = userRepository;
-        this.chatMessageRepo = chatMessageRepo;
+
     }
 
     // GET all chats

@@ -119,6 +119,8 @@ public class TopicController {
         if (result.hasErrors()) {
             return ResponseEntity.badRequest().body("Invalid/Missing topic data.");
         }
+        return null; 
+    }
 
     // Get number of topics completed in last 7 days
     @GetMapping("/topics/num-topics")

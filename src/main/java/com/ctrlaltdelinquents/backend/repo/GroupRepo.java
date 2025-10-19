@@ -21,4 +21,7 @@ public interface GroupRepo extends JpaRepository<Group, Integer> {
             "ORDER BY RANDOM() " +
             "LIMIT 5", nativeQuery = true)
     List<Group> findRandomDiscoverableGroups(@Param("userId") String userId);
+
+    @Query(value = "SELECT g.* FROM \"group\" g INNER JOIN group_members gm ON g.groupid = gm.groupid WHERE gm.userid = :userid", nativeQuery = true)
+    List<Group> findByUser(@Param("userid") String userid);
 }

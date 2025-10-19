@@ -40,4 +40,10 @@ public class GroupController {
     public List<Group> discoverGroups(@RequestParam String userId) {
         return groupRepo.findRandomDiscoverableGroups(userId);
     }
+
+    @GetMapping("/getGroups")
+    @ResponseBody
+    public List<Group> findGroupsByUserId(@RequestParam String userid) {
+        return groupRepo.findByUser(userid);
+    }
 }
