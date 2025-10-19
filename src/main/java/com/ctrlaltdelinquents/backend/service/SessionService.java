@@ -39,8 +39,8 @@ public class SessionService {
                 .orElseThrow(() -> new RuntimeException("Session not found with id: " + id));
 
         session.setTitle(sessionDetails.getTitle());
-        session.setStart_time(sessionDetails.getStart_time());
-        session.setEnd_time(sessionDetails.getEnd_time());
+        session.setStartTime(sessionDetails.getStartTime());
+        session.setEndTime(sessionDetails.getEndTime());
         session.setStatus(sessionDetails.getStatus());
         session.setLocation(sessionDetails.getLocation());
         session.setDescription(sessionDetails.getDescription());
