@@ -119,8 +119,6 @@ public class TopicController {
         if (result.hasErrors()) {
             return ResponseEntity.badRequest().body("Invalid/Missing topic data.");
         }
-        return null; 
-    }
 
         if (!moduleRepository.existsByCourseCode(topic.getCourse_code())) {
             return ResponseEntity.badRequest()
