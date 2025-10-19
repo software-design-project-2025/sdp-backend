@@ -5,8 +5,10 @@ import com.ctrlaltdelinquents.backend.repo.ChatMessageRepo;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -38,6 +40,11 @@ public class ChatMessageController {
         return chatMessageRepo.save(message);
     }
 
+    @PutMapping("/updateStatus")
+    public ResponseEntity<String> updateStatus(@RequestParam int messageid, @RequestParam boolean read_status) {
+        chatMessageRepo.updateStatus(messageid, read_status);
+        return ResponseEntity.ok("Status updated successfully to: " + read_status);
+    }
 }
 
     

@@ -11,4 +11,8 @@ import lombok.Setter;
 @ConfigurationProperties(prefix = "app") //Loads properties from application.properties that have an "app" prefix
 public class AppConfig {
     private String apiKey; //Gives access to API Key from .env through application.properties
+
+    public String getApiKey() {
+        return apiKey;
+    }
 }

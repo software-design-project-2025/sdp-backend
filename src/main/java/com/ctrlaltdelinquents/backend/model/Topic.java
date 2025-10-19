@@ -14,7 +14,8 @@ import java.time.LocalDateTime;
 public class Topic {
 
     @Id
-    private int topicid;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer topicid;
 
     @JoinColumn(name = "userid")
     private String userid;

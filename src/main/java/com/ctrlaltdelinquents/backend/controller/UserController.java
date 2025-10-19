@@ -5,17 +5,25 @@ import com.ctrlaltdelinquents.backend.model.User;
 import com.ctrlaltdelinquents.backend.repo.UserRepository;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 
+import com.ctrlaltdelinquents.backend.service.AzureBlobStorageService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
     private final UserRepository userRepository;
+
+    @Autowired
+    private AzureBlobStorageService azureBlobStorageService;
 
     public UserController(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -78,6 +86,103 @@ public class UserController {
         } catch (Exception e) {
             // Log the exception details here for debugging
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @PutMapping("/put/{id}")
+    public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody User updatedUser) {
+        try {
+            Optional<User> existingUserOpt = userRepository.findById(id);
+            if (existingUserOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Error: User with id " + id + " not found");
+            }
+
+            User existingUser = existingUserOpt.get();
+
+            existingUser.setRole(updatedUser.getRole());
+            existingUser.setDegreeid(updatedUser.getDegreeid());
+            existingUser.setYearofstudy(updatedUser.getYearofstudy());
+            existingUser.setBio(updatedUser.getBio());
+            existingUser.setStatus(updatedUser.getStatus());
+            existingUser.setProfile_picture(updatedUser.getProfile_picture());
+
+            User savedUser = userRepository.save(existingUser);
+            return ResponseEntity.ok(savedUser);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error: Failed to update user: " + e.getMessage());
+        }
+    }
+
+    @PatchMapping("/patch/{id}")
+    public ResponseEntity<?> patchUser(@PathVariable String id, @RequestBody Map<String, Object> updates) {
+        try {
+            Optional<User> existingUserOpt = userRepository.findById(id);
+            if (existingUserOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Error: User with id " + id + " not found");
+            }
+
+            User existingUser = existingUserOpt.get();
+
+            // Apply partial updates if present in the map
+            if (updates.containsKey("role")) {
+                existingUser.setRole((String) updates.get("role"));
+            }
+            if (updates.containsKey("degreeid")) {
+                existingUser.setDegreeid((Integer) updates.get("degreeid"));
+            }
+            if (updates.containsKey("yearofstudy")) {
+                existingUser.setYearofstudy((Integer) updates.get("yearofstudy"));
+            }
+            if (updates.containsKey("bio")) {
+                existingUser.setBio((String) updates.get("bio"));
+            }
+            if (updates.containsKey("status")) {
+                existingUser.setStatus((String) updates.get("status"));
+            }
+            if (updates.containsKey("profile_picture")) {
+                existingUser.setProfile_picture((String) updates.get("profile_picture"));
+            }
+
+            User savedUser = userRepository.save(existingUser);
+            return ResponseEntity.ok(savedUser);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error: Failed to patch user: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/{userId}/profile-picture")
+    public ResponseEntity<?> uploadProfilePicture(
+            @PathVariable String userId,
+            @RequestParam("file") MultipartFile file) {
+
+        try {
+            // Step A: Upload the file to Azure Blob Storage using the service
+            String imageUrl = azureBlobStorageService.upload(file, userId);
+
+            // Step B: Find the user in your database
+            Optional<User> userOptional = userRepository.findById(userId);
+
+            if (userOptional.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found with id: " + userId);
+            }
+
+            // Step C: Update the user's profile_picture field with the new URL
+            User user = userOptional.get();
+            user.setProfile_picture(imageUrl);
+            userRepository.save(user); // Save the updated user to the database
+
+            // Step D: Return a success response with the new URL to the frontend
+            return ResponseEntity.ok(Map.of("imageUrl", imageUrl));
+
+        } catch (Exception e) {
+            // Log the error for debugging
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to upload file.");
         }
     }
 }
