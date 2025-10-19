@@ -49,8 +49,10 @@ public class GroupController {
         return groupRepo.findRandomDiscoverableGroups(userId);
 
     }
+
     @GetMapping
     public ResponseEntity<List<Group>> getAllGroups() {
         List<Group> groups = groupService.getAllGroups();
         return ResponseEntity.ok(groups);
+    }
 }
