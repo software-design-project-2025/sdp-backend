@@ -109,7 +109,7 @@ public class TopicController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-  
+
     @PostMapping("/new")
     public ResponseEntity<?> createTopic(@Valid @RequestBody(required = false) Topic topic, BindingResult result) {
         if (topic == null) {
@@ -119,6 +119,21 @@ public class TopicController {
         if (result.hasErrors()) {
             return ResponseEntity.badRequest().body("Invalid/Missing topic data.");
         }
+
+        if (!moduleRepository.existsByCourseCode(topic.getCourse_code())) {
+            return ResponseEntity.badRequest()
+                    .body("No such course with course_code: " + topic.getCourse_code());
+        }
+
+
+        try {
+            Topic savedTopic = topicRepository.save(topic);
+            return ResponseEntity.ok(savedTopic);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to create topic: " + e.getMessage());
+        }
+    }
 
     // Get number of topics completed in last 7 days
     @GetMapping("/topics/num-topics")
