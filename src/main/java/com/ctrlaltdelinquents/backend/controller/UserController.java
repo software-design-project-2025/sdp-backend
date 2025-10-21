@@ -132,7 +132,8 @@ public class UserController {
                 existingUser.setRole((String) updates.get("role"));
             }
             if (updates.containsKey("degreeid")) {
-                existingUser.setDegreeid((Integer) updates.get("degreeid"));
+                int degreeId = Integer.parseInt(updates.get("degreeid").toString());
+                existingUser.setDegreeid(degreeId);
             }
             if (updates.containsKey("yearofstudy")) {
                 existingUser.setYearofstudy((Integer) updates.get("yearofstudy"));
