@@ -10,12 +10,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+//@RequestMapping("/api/groups")
+@CrossOrigin(origins = {"http://localhost:4200", "https://witty-coast-007353203.1.azurestaticapps.net"})
 @RequestMapping("/api/auth/groups")
-@CrossOrigin(origins = "http://localhost:4200")
 public class GroupController {
 
     private final GroupRepo groupRepo;
     private final GroupMembersRepo groupMembersRepo;
+    private GroupService groupService;
 
     public GroupController(GroupRepo groupRepo, GroupMembersRepo groupMembersRepo) {
         this.groupRepo = groupRepo;
@@ -40,5 +42,11 @@ public class GroupController {
     @GetMapping("/discover")
     public List<Group> discoverGroups(@RequestParam String userId) {
         return groupRepo.findRandomDiscoverableGroups(userId);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Group>> getAllGroups() {
+        List<Group> groups = groupService.getAllGroups();
+        return ResponseEntity.ok(groups);
     }
 }

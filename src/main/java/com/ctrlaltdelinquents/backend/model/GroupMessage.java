@@ -16,7 +16,7 @@ public class GroupMessage {
     private int messageid;
 
     @JoinColumn(name = "groupid")
-    private int groupid;
+    private Integer groupid;
 
     @Column(name = "sent_datetime")
     private LocalDateTime sent_datetime;

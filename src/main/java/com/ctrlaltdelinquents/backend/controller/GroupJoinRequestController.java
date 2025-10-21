@@ -13,7 +13,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/auth/join-requests")
-@CrossOrigin(origins = "http://localhost:4200")
 public class GroupJoinRequestController {
 
     private final GroupJoinRequestRepo groupJoinRequestRepo;

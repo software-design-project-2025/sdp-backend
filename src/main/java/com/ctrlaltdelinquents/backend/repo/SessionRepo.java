@@ -2,16 +2,25 @@ package com.ctrlaltdelinquents.backend.repo;
 
 import com.ctrlaltdelinquents.backend.model.Session;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import com.ctrlaltdelinquents.backend.model.Session;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Repository
-public interface SessionRepo extends JpaRepository<Session, Integer> {
+public interface SessionRepo extends JpaRepository<Session, Integer>, JpaSpecificationExecutor<Session> {
+    List<Session> findByCreatorid(String creatorId);
+    List<Session> findByGroupid(int groupId);
 
-        // UPDATED QUERY: Find sessions where user is either creator OR member
+    // UPDATED QUERY: Find sessions where user is either creator OR member
         @Query(value = "SELECT DISTINCT s.* FROM session s " +
                         "LEFT JOIN session_members sm ON s.sessionid = sm.sessionid " +
                         "WHERE (s.creatorid = :userId OR sm.userid = :userId) " +
@@ -41,4 +50,24 @@ public interface SessionRepo extends JpaRepository<Session, Integer> {
                         "AND s.end_time >= CURRENT_DATE - INTERVAL '7 days'", nativeQuery = true)
         Integer countSessionsAttendedLast7Days(@Param("userId") String userId);
 
+    // "Past Sessions" Tab
+    @Query(value = "SELECT DISTINCT s.* FROM session s " +
+            "LEFT JOIN session_members sm ON s.sessionid = sm.sessionid " +
+            "WHERE (s.creatorid = :userId OR sm.userid = :userId) " +
+            "AND s.status = 'completed' " + // Only show completed sessions
+            "AND s.start_time < CURRENT_TIMESTAMP " +
+            "ORDER BY s.start_time DESC", nativeQuery = true)
+    List<Session> findPastSessions(@Param("userId") String userId);
+
+    // --- QUERY FOR JOINING (Overlap Check) ---
+
+    // Finds sessions a user is in (as member or creator) that conflict with a new time range
+    @Query(value = "SELECT s.* FROM session s " +
+            "LEFT JOIN session_members sm ON s.sessionid = sm.sessionid " +
+            "WHERE (s.creatorid = :userId OR sm.userid = :userId) " +
+            "AND s.status != 'completed' " + // Don't check against completed sessions
+            "AND (s.start_time < :newEndTime AND s.end_time > :newStartTime)", nativeQuery = true)
+    List<Session> findOverlappingSessions(@Param("userId") String userId,
+                                          @Param("newStartTime") LocalDateTime newStartTime,
+                                          @Param("newEndTime") LocalDateTime newEndTime);
 }

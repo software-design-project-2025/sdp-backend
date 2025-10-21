@@ -1,42 +1,66 @@
 package com.ctrlaltdelinquents.backend.service;
 
 import com.azure.storage.blob.BlobClient;
-import com.azure.storage.blob.BlobContainerClient;
+import com.azure.storage.blob.BlobServiceClient;
+import com.azure.storage.blob.sas.BlobSasPermission;
+import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Service
 public class AzureBlobStorageService {
 
-    // The starter library automatically creates this bean for us
+    // Spring will now inject the bean we created in AzureStorageConfig.java
     @Autowired
-    private BlobContainerClient blobContainerClient;
+    private BlobServiceClient blobServiceClient;
 
-    /**
-     * Uploads a file to Azure Blob Storage.
-     * @param file The file to upload.
-     * @param userId The ID of the user to associate with the file.
-     * @return The public URL of the uploaded file.
-     * @throws IOException If an I/O error occurs.
-     */
+    // Read the container names from application.properties
+    @Value("${azure.storage.container.name}")
+    private String profilePicturesContainer;
+
+    @Value("${azure.storage.container.name.documents}")
+    private String documentsContainer;
+
+    // --- Profile Picture Method ---
     public String upload(MultipartFile file, String userId) throws IOException {
-        // 1. Generate a unique filename to avoid overwriting existing files
-        String fileExtension = getFileExtension(file.getOriginalFilename());
-        String uniqueFileName = "user-" + userId + "-" + UUID.randomUUID() + fileExtension;
+        String sanitizedUserId = userId.replace("|", "-");
+        String uniqueFileName = "user-" + sanitizedUserId + "-" + UUID.randomUUID() + getFileExtension(file.getOriginalFilename());
 
-        // 2. Get a reference to a blob in the container
-        BlobClient blobClient = blobContainerClient.getBlobClient(uniqueFileName);
+        // Use the master client to get the specific container client for profile pictures
+        BlobClient blobClient = blobServiceClient.getBlobContainerClient(profilePicturesContainer)
+                .getBlobClient(uniqueFileName);
 
-        // 3. Upload the file's data to the blob
-        // This is the line that performs the actual upload to Azure
         blobClient.upload(file.getInputStream(), file.getSize(), true);
-
-        // 4. Return the public URL of the blob
         return blobClient.getBlobUrl();
+    }
+
+    // --- Document Methods ---
+    public String uploadDocument(MultipartFile file, String userId) throws IOException {
+        String sanitizedUserId = userId.replace("|", "-");
+        String uniqueBlobName = "doc-" + sanitizedUserId + "-" + UUID.randomUUID() + getFileExtension(file.getOriginalFilename());
+
+        // Use the same master client to get the container client for documents
+        BlobClient blobClient = blobServiceClient.getBlobContainerClient(documentsContainer)
+                .getBlobClient(uniqueBlobName);
+        blobClient.upload(file.getInputStream(), file.getSize(), true);
+        return uniqueBlobName;
+    }
+
+    public String generateSasUrl(String blobName) {
+        BlobClient blobClient = blobServiceClient.getBlobContainerClient(documentsContainer)
+                .getBlobClient(blobName);
+
+        BlobSasPermission sasPermission = new BlobSasPermission().setReadPermission(true);
+        OffsetDateTime expiryTime = OffsetDateTime.now().plusMinutes(5);
+        BlobServiceSasSignatureValues sasValues = new BlobServiceSasSignatureValues(expiryTime, sasPermission);
+
+        return String.format("%s?%s", blobClient.getBlobUrl(), blobClient.generateSas(sasValues));
     }
 
     private String getFileExtension(String fileName) {
