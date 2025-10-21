@@ -4,6 +4,7 @@ import com.ctrlaltdelinquents.backend.model.Topic;
 import com.ctrlaltdelinquents.backend.repo.ModuleRepo;
 import com.ctrlaltdelinquents.backend.repo.ModuleRepository;
 import com.ctrlaltdelinquents.backend.repo.TopicRepository;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/topic")
@@ -144,6 +149,42 @@ public class TopicController {
         int count = topicCount != null ? topicCount : 0;
 
         return new TopicCountResponse(userId, count);
+    }
+
+    // Update a topic
+    @PatchMapping("/patch/{id}")
+    public ResponseEntity<?> updateTopic(@PathVariable Integer id, @RequestBody Map<String, Object> updates) {
+        try {
+            Optional<Topic> topic = topicRepository.findById(String.valueOf(id));
+            if (topic.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Error: Topic with id " + id + " not found");
+            }
+
+            Topic existingTopic = topic.get();
+            if (updates.containsKey("title")) {
+                existingTopic.setTitle(updates.get("title").toString());
+            }
+            if (updates.containsKey("description")) {
+                existingTopic.setDescription(updates.get("description").toString());
+            }
+            if (updates.containsKey("course_code")) {
+                existingTopic.setCourse_code(updates.get("course_code").toString());
+            }
+            if (updates.containsKey("status")) {
+                existingTopic.setStatus(updates.get("status").toString());
+            }
+            if (updates.containsKey("hours")) {
+                BigDecimal hoursDecimal = new BigDecimal(updates.get("hours").toString());
+                existingTopic.setHours(hoursDecimal);
+            }
+
+            Topic updatedTopic = topicRepository.save(existingTopic);
+            return ResponseEntity.ok(updatedTopic);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error: Failed to patch topic: " + e.getMessage());
+        }
     }
 
     // Simple Response DTO
