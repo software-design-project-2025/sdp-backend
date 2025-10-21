@@ -70,3 +70,7 @@ task printJavaVersion {
         println "Java version used by Gradle: ${System.getProperty('java.version')}"
     }
 }
+
+jar {
+    archiveFileName = 'app.jar'
+}
