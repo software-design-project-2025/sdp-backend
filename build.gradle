@@ -24,8 +24,6 @@ test {
     finalizedBy jacocoTestReport
 }
 
-
-
 jacocoTestReport {
     dependsOn test
     reports {
@@ -64,7 +62,6 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-
 task printJavaVersion {
     doLast {
         println "Java version used by Gradle: ${System.getProperty('java.version')}"
@@ -72,5 +69,10 @@ task printJavaVersion {
 }
 
 jar {
+    enabled = false
+}
+
+bootJar {
     archiveFileName = 'app.jar'
+    mainClass = 'com.ctrlaltdelinquents.backend.CampusStudyBuddyApplication'
 }
