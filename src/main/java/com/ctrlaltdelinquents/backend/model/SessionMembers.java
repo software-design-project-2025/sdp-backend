@@ -7,17 +7,36 @@ import lombok.Setter;
 @Entity
 @Setter
 @Getter
-@IdClass(SessionMembersId.class)
+@IdClass(SessionMembersId.class) // Use the IdClass
 @Table(name = "session_members")
 public class SessionMembers {
 
     @Id
-    @ManyToOne
-    @JoinColumn(name = "sessionid")
-    private Session sessionid;
+    @Column(name = "sessionid")
+    private Integer sessionid; // This is the ID (Integer)
 
     @Id
+    @Column(name = "userid")
+    private String userid; // This is the ID (String)
+
+    // --- Mappings for retrieving the actual objects ---
+    // These are NOT part of the ID
+
     @ManyToOne
-    @JoinColumn(name = "userid")
-    private User userid;
+    @JoinColumn(name = "sessionid", referencedColumnName = "sessionid", insertable = false, updatable = false)
+    private Session session;
+
+    @ManyToOne
+    @JoinColumn(name = "userid", referencedColumnName = "userid", insertable = false, updatable = false)
+    private User user;
+
+    // --- Constructors ---
+
+    public SessionMembers() {}
+
+    // This constructor is used by your SessionMembersService
+    public SessionMembers(Integer sessionid, String userid) {
+        this.sessionid = sessionid;
+        this.userid = userid;
+    }
 }
