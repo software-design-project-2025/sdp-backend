@@ -16,17 +16,10 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/sessions") // Changed base request mapping for clarity
+@RequestMapping("/api/sessions") // Using your teammate's base path
 @CrossOrigin(origins = {"http://localhost:4200", "https://witty-coast-007353203.1.azurestaticapps.net"})
 public class SessionController {
 
-    // Removed the constructor-based injection since you use @Autowired
-    // private final SessionRepo sessionRepo;
-    // public SessionController(SessionRepo sessionRepo) {
-    //     this.sessionRepo = sessionRepo;
-    // }
-
-    // We need SessionRepo for the stats queries.
     @Autowired
     private SessionRepo sessionRepo;
 
@@ -34,17 +27,44 @@ public class SessionController {
     private SessionService sessionService;
 
     @Autowired
-    private SessionMembersService sessionMembersService; // Inject the new service
+    private SessionMembersService sessionMembersService;
 
-    // --- MAIN CRUD ---
+    
+    // GET all upcoming sessions for a specific user
+    @GetMapping("/upcoming")
+    public List<Session> getUpcomingSessions(@RequestParam String userId) {
+        return sessionRepo.findUpcomingSessions(userId);
+    }
+
+    // GET total study hours for a user in the past 7 days
+    @GetMapping("/study-hours")
+    public StudyHoursResponse getStudyHoursLast7Days(@RequestParam String userId) {
+        Double totalHours = sessionRepo.getActualStudyHoursLast7Days(userId);
+
+        // Round to nearest whole number for simplicity
+        int roundedHours = totalHours != null ? (int) Math.round(totalHours) : 0;
+        double exactHours = totalHours != null ? totalHours : 0.0;
+
+        return new StudyHoursResponse(userId, roundedHours, exactHours);
+    }
+
+    // GET number of sessions attended by user in past 7 days
+    @GetMapping("/num-sessions")
+    public SessionCountResponse getNumberOfSessionsAttended(@RequestParam String userId) {
+        Integer sessionCount = sessionRepo.countSessionsAttendedLast7Days(userId);
+
+        // Handle null case and return 0 if no sessions found
+        int count = sessionCount != null ? sessionCount : 0;
+
+        return new SessionCountResponse(userId, count);
+    }
+
 
     /**
      * Creates a new session and automatically adds the creator as a member.
      */
     @PostMapping
     public ResponseEntity<Session> createSession(@RequestBody Session session) {
-        // Assumes creatorid is set in the request body
-        // In a real app, you'd get this from the security principal
         try {
             Session createdSession = sessionService.createSession(session);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdSession);
@@ -58,12 +78,10 @@ public class SessionController {
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSession(@PathVariable Integer id, @RequestParam String userId) {
-        // TODO: Get userId from Spring Security Principal instead of RequestParam
         try {
             sessionService.deleteSession(id, userId);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            // Differentiate between not found and forbidden
             if (e.getMessage().contains("Only the session creator")) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
@@ -79,7 +97,6 @@ public class SessionController {
      */
     @PostMapping("/{id}/join")
     public ResponseEntity<SessionMembers> joinSession(@PathVariable Integer id, @RequestParam String userId) {
-        // TODO: Get userId from Spring Security Principal
         try {
             SessionMembers membership = sessionMembersService.joinSession(id, userId);
             return ResponseEntity.ok(membership);
@@ -94,7 +111,6 @@ public class SessionController {
      */
     @DeleteMapping("/{id}/leave")
     public ResponseEntity<Void> leaveSession(@PathVariable Integer id, @RequestParam String userId) {
-        // TODO: Get userId from Spring Security Principal
         try {
             sessionMembersService.leaveSession(id, userId);
             return ResponseEntity.noContent().build();
@@ -114,8 +130,6 @@ public class SessionController {
     @PatchMapping("/{id}/extend")
     public ResponseEntity<Session> extendSession(@PathVariable Integer id,
                                                  @RequestBody Map<String, String> payload) {
-        // Payload expected: { "userId": "...", "newEndTime": "..." }
-        // TODO: Get userId from Spring Security Principal
         try {
             String userId = payload.get("userId");
             LocalDateTime newEndTime = LocalDateTime.parse(payload.get("newEndTime"));
@@ -131,8 +145,6 @@ public class SessionController {
      */
     @PatchMapping("/{id}/end")
     public ResponseEntity<Session> endSession(@PathVariable Integer id, @RequestBody Map<String, String> payload) {
-        // Payload expected: { "userId": "..." }
-        // TODO: Get userId from Spring Security Principal
         try {
             String userId = payload.get("userId");
             Session session = sessionService.endSession(id, userId);
@@ -158,20 +170,10 @@ public class SessionController {
     }
 
     /**
-     * GET sessions for the "Future Sessions" tab.
-     */
-    @GetMapping("/upcoming")
-    public ResponseEntity<List<Session>> getUpcomingSessions(@RequestParam String userId) {
-        // TODO: Get userId from Spring Security Principal
-        return ResponseEntity.ok(sessionService.getUpcomingSessions(userId));
-    }
-
-    /**
      * GET sessions for the "Past Sessions" tab.
      */
     @GetMapping("/past")
     public ResponseEntity<List<Session>> getPastSessions(@RequestParam String userId) {
-        // TODO: Get userId from Spring Security Principal
         return ResponseEntity.ok(sessionService.getPastSessions(userId));
     }
 
@@ -180,7 +182,6 @@ public class SessionController {
      */
     @GetMapping("/my-created")
     public ResponseEntity<List<Session>> getMyCreatedSessions(@RequestParam String userId) {
-        // TODO: Get userId from Spring Security Principal
         return ResponseEntity.ok(sessionService.getSessionsByCreator(userId));
     }
 
@@ -199,9 +200,8 @@ public class SessionController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<Session> updateSession(@PathVariable Integer id,
-                                                 @RequestParam String userId, // For auth
+                                                 @RequestParam String userId,
                                                  @RequestBody Session sessionDetails) {
-        // TODO: Get userId from Spring Security Principal
         try {
             Session updatedSession = sessionService.updateScheduledSession(id, userId, sessionDetails);
             return ResponseEntity.ok(updatedSession);
@@ -216,52 +216,75 @@ public class SessionController {
         }
     }
 
-    // --- STATS (from your original file) ---
-    // Note: I moved these to /api/sessions/stats/*
-
-    @GetMapping("/stats/study-hours")
-    public StudyHoursResponse getStudyHoursLast7Days(@RequestParam String userId) {
-        // TODO: Get userId from Spring Security Principal
-        Double totalHours = sessionRepo.getActualStudyHoursLast7Days(userId);
-        int roundedHours = totalHours != null ? (int) Math.round(totalHours) : 0;
-        double exactHours = totalHours != null ? totalHours : 0.0;
-        return new StudyHoursResponse(userId, roundedHours, exactHours);
-    }
-
-    @GetMapping("/stats/num-sessions")
-    public SessionCountResponse getNumberOfSessionsAttended(@RequestParam String userId) {
-        // TODO: Get userId from Spring Security Principal
-        Integer sessionCount = sessionRepo.countSessionsAttendedLast7Days(userId);
-        int count = sessionCount != null ? sessionCount : 0;
-        return new SessionCountResponse(userId, count);
-    }
-
-    // --- DTOs (moved from being inner classes) ---
-    // It's cleaner to put these in their own files in a 'dto' package,
-    // but having them here is fine for now.
-
+    // ===== YOUR ORIGINAL RESPONSE DTOs =====
+    
     public static class SessionCountResponse {
         private String userId;
         private int numSessions;
-        // ... constructors, getters, setters
-        public SessionCountResponse(String userId, int numSessions) { this.userId = userId; this.numSessions = numSessions; }
-        public String getUserId() { return userId; }
-        public void setUserId(String userId) { this.userId = userId; }
-        public int getNumSessions() { return numSessions; }
-        public void setNumSessions(int numSessions) { this.numSessions = numSessions; }
+
+        public SessionCountResponse() {
+        }
+
+        public SessionCountResponse(String userId, int numSessions) {
+            this.userId = userId;
+            this.numSessions = numSessions;
+        }
+
+        // Getters and setters
+        public String getUserId() {
+            return userId;
+        }
+
+        public void setUserId(String userId) {
+            this.userId = userId;
+        }
+
+        public int getNumSessions() {
+            return numSessions;
+        }
+
+        public void setNumSessions(int numSessions) {
+            this.numSessions = numSessions;
+        }
     }
 
     public static class StudyHoursResponse {
         private String userId;
         private int totalHours;
         private double exactHours;
-        // ... constructors, getters, setters
-        public StudyHoursResponse(String userId, int totalHours, double exactHours) { this.userId = userId; this.totalHours = totalHours; this.exactHours = exactHours; }
-        public String getUserId() { return userId; }
-        public void setUserId(String userId) { this.userId = userId; }
-        public int getTotalHours() { return totalHours; }
-        public void setTotalHours(int totalHours) { this.totalHours = totalHours; }
-        public double getExactHours() { return exactHours; }
-        public void setExactHours(double exactHours) { this.exactHours = exactHours; }
+
+        public StudyHoursResponse() {
+        }
+
+        public StudyHoursResponse(String userId, int totalHours, double exactHours) {
+            this.userId = userId;
+            this.totalHours = totalHours;
+            this.exactHours = exactHours;
+        }
+
+        // Getters and setters
+        public String getUserId() {
+            return userId;
+        }
+
+        public void setUserId(String userId) {
+            this.userId = userId;
+        }
+
+        public int getTotalHours() {
+            return totalHours;
+        }
+
+        public void setTotalHours(int totalHours) {
+            this.totalHours = totalHours;
+        }
+
+        public double getExactHours() {
+            return exactHours;
+        }
+
+        public void setExactHours(double exactHours) {
+            this.exactHours = exactHours;
+        }
     }
 }

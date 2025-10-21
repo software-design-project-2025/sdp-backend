@@ -4,12 +4,6 @@ import com.ctrlaltdelinquents.backend.model.Group;
 import com.ctrlaltdelinquents.backend.model.GroupMembers;
 import com.ctrlaltdelinquents.backend.repo.GroupRepo;
 import com.ctrlaltdelinquents.backend.repo.GroupMembersRepo;
-import com.ctrlaltdelinquents.backend.repo.GroupRepo;
-import com.ctrlaltdelinquents.backend.service.GroupService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import com.ctrlaltdelinquents.backend.service.GroupService;
-import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
