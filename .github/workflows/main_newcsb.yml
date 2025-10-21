@@ -59,4 +59,5 @@ jobs:
         with:
           app-name: 'newcsb'
           slot-name: 'Production'
-          package: ${{ steps.find_jar.outputs.jar_path }}
+          package: 'app.jar'
+
