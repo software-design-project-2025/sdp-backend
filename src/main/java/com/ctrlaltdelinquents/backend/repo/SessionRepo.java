@@ -32,7 +32,7 @@ public interface SessionRepo extends JpaRepository<Session, Integer>, JpaSpecifi
 
     // Get total study hours for a user in the past 7 days
     // only counts completed sessions user was part of
-    @Query(value = "SELECT COALESCE(SUM(EXTRACT(EPOCH FROM (s.end_time - s.start_time)) / 3600), 0) " +
+    @Query(value = "SELECT COALESCE(SUM(ABS(EXTRACT(EPOCH FROM (s.end_time - s.start_time))) / 3600), 0) " +
                     "FROM session s " +
                     "JOIN session_members sm ON s.sessionid = sm.sessionid " + // Changed to INNER JOIN (must be
                                                                                // member)
