@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class GroupDoc {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-increments the primary key
     @Column(name = "docid")
     private int docid;
 
