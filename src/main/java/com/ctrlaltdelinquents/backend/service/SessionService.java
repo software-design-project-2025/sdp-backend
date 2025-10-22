@@ -1,9 +1,12 @@
 package com.ctrlaltdelinquents.backend.service;
 
+import com.ctrlaltdelinquents.backend.dto.SessionParticipantDTO;
 import com.ctrlaltdelinquents.backend.model.Session;
 import com.ctrlaltdelinquents.backend.model.SessionMembers;
 import com.ctrlaltdelinquents.backend.repo.SessionMembersRepo;
 import com.ctrlaltdelinquents.backend.repo.SessionRepo;
+import com.ctrlaltdelinquents.backend.model.User;
+import com.ctrlaltdelinquents.backend.repo.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -12,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class SessionService {
@@ -21,6 +25,9 @@ public class SessionService {
 
     @Autowired
     private SessionMembersRepo sessionMembersRepo;
+
+    @Autowired
+    private UserRepository userRepo;
 
     public List<Session> getAllSessions() {
         return sessionRepository.findAll();
@@ -195,5 +202,38 @@ public class SessionService {
         // We explicitly DO NOT update creatorid, groupid, or status
 
         return sessionRepository.save(session);
+    }
+
+    /**
+     * Retrieves a list of participants (ID and username) for a given session.
+     * @param sessionId The ID of the session.
+     * @return A list of SessionParticipantDTOs.
+     * @throws RuntimeException if the session is not found.
+     */
+    @Transactional(readOnly = true) // Good practice for read operations
+    public List<SessionParticipantDTO> getSessionMembers(Integer sessionId) {
+        // Optional: Check if session exists first
+        if (!sessionRepository.existsById(sessionId)) {
+            throw new RuntimeException("Session not found with id: " + sessionId);
+        }
+
+        // 1. Find all memberships for the session
+        List<SessionMembers> memberships = sessionMembersRepo.findBySessionid(sessionId);
+
+        // 2. Map memberships to DTOs, fetching username for each member
+        return memberships.stream()
+                .map(member -> {
+                    String userId = member.getUserid();
+                    // Fetch the User entity to get the username
+                    // Handle cases where user might not be found (though unlikely with FK constraints)
+                    String username = userRepo.findById(userId)
+                            .map(User::getUserid) // Assuming User has getUsername()
+                            .orElse("Unknown User");
+                    return new SessionParticipantDTO(userId, username);
+                    // If sending profile picture:
+                    // String profilePic = userRepo.findById(userId).map(User::getProfilePicture).orElse(null);
+                    // return new SessionParticipantDTO(userId, username, profilePic);
+                })
+                .collect(Collectors.toList());
     }
 }

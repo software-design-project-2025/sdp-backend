@@ -1,7 +1,12 @@
 package com.ctrlaltdelinquents.backend.controller;
 
+import com.ctrlaltdelinquents.backend.dto.SessionParticipantDTO;
+import com.ctrlaltdelinquents.backend.model.Group;
+import com.ctrlaltdelinquents.backend.model.GroupMembers;
 import com.ctrlaltdelinquents.backend.model.Session;
 import com.ctrlaltdelinquents.backend.model.SessionMembers;
+import com.ctrlaltdelinquents.backend.repo.GroupMembersRepo;
+import com.ctrlaltdelinquents.backend.repo.GroupRepo;
 import com.ctrlaltdelinquents.backend.repo.SessionRepo;
 import com.ctrlaltdelinquents.backend.service.SessionMembersService;
 import com.ctrlaltdelinquents.backend.service.SessionService;
@@ -9,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -36,19 +42,56 @@ public class SessionController {
     @Autowired
     private SessionMembersService sessionMembersService; // Inject the new service
 
+    @Autowired
+    private GroupRepo groupRepo;
+
+    @Autowired
+    private GroupMembersRepo groupMembersRepo;
+
     // --- MAIN CRUD ---
 
     /**
-     * Creates a new session and automatically adds the creator as a member.
+     * Creates a new session, which also creates a new corresponding "Study Session" group,
+     * adds the creator to that group, and then creates the session, linking it
+     * to the new group ID.
      */
     @PostMapping
+    @Transactional // Ensures all database operations (group, groupmember, session) succeed or fail together
     public ResponseEntity<Session> createSession(@RequestBody Session session) {
         // Assumes creatorid is set in the request body
         // In a real app, you'd get this from the security principal
         try {
+            // --- START: GROUP CREATION LOGIC ---
+
+            // 1. Create the new Group based on session data
+            Group newGroup = new Group();
+            newGroup.setTitle(session.getTitle()); // Use session title
+            newGroup.setGoal("Study Session");      // Hardcoded goal
+            newGroup.setActive(true);               // Hardcoded active
+            newGroup.setCreatorid(session.getCreatorid()); // Use session creator
+
+            // 2. Save the new group to get its generated ID
+            Group savedGroup = groupRepo.save(newGroup);
+
+            // 3. Automatically add the creator as a member of their new group
+            // (This logic mirrors your GroupController)
+            GroupMembers creatorAsMember = new GroupMembers();
+            creatorAsMember.setGroupid(savedGroup.getGroupid());
+            creatorAsMember.setUserid(savedGroup.getCreatorid()); // or session.getCreatorid()
+            groupMembersRepo.save(creatorAsMember);
+
+            // 4. Overwrite the session's groupid with the new one
+            session.setGroupid(savedGroup.getGroupid());
+
+            // --- END: GROUP CREATION LOGIC ---
+
+
+            // 5. Proceed with creating the session as before
             Session createdSession = sessionService.createSession(session);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdSession);
+
         } catch (Exception e) {
+            // Consider logging the exception e.g., log.error("Error creating session and group: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
     }
@@ -56,11 +99,12 @@ public class SessionController {
     /**
      * Deletes a session. Only the creator can do this.
      */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSession(@PathVariable Integer id, @RequestParam String userId) {
-        // TODO: Get userId from Spring Security Principal instead of RequestParam
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> deleteSession(@PathVariable String id) {
+        System.out.println("He tried to delete session with id ");
         try {
-            sessionService.deleteSession(id, userId);
+            Integer sessionId = Integer.parseInt(id);
+            sessionService.deleteSession(sessionId);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             // Differentiate between not found and forbidden
@@ -234,6 +278,27 @@ public class SessionController {
         Integer sessionCount = sessionRepo.countSessionsAttendedLast7Days(userId);
         int count = sessionCount != null ? sessionCount : 0;
         return new SessionCountResponse(userId, count);
+    }
+
+    /**
+     * GET: Participants for a specific session.
+     * @param id The session ID.
+     * @return List of participants or Not Found.
+     */
+    @GetMapping("/{id}/members")
+    public ResponseEntity<List<SessionParticipantDTO>> getSessionMembers(@PathVariable Integer id) {
+        try {
+            List<SessionParticipantDTO> participants = sessionService.getSessionMembers(id);
+            return ResponseEntity.ok(participants);
+        } catch (RuntimeException e) {
+            // Handle specific exceptions like SessionNotFound if you have them
+            if (e.getMessage().contains("Session not found")) {
+                return ResponseEntity.notFound().build();
+            }
+            // Log other errors if necessary
+            System.err.println("Error fetching session members: " + e.getMessage()); // Replace with proper logging
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     // --- DTOs (moved from being inner classes) ---

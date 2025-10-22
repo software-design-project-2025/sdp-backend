@@ -8,9 +8,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface SessionMembersRepo extends JpaRepository<SessionMembers, SessionMembersId> {
     @Modifying
     @Query("DELETE FROM SessionMembers sm WHERE sm.sessionid = :sessionId")
     void deleteBySessionid(@Param("sessionId") Integer sessionId);
+
+    List<SessionMembers> findBySessionid(Integer sessionId);
 }
