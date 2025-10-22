@@ -75,7 +75,7 @@ public class GroupDocController {
     @GetMapping("/group/{groupId}")
     public ResponseEntity<List<GroupDoc>> getDocsByGroupId(@PathVariable("groupId") Integer groupId) {
         try {
-            List<GroupDoc> documents = groupDocRepo.findByGroupID(groupId);
+            List<GroupDoc> documents = groupDocRepo.findByGroupid(groupId);
             if (documents.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             }
