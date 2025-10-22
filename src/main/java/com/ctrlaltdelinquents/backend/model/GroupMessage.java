@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class GroupMessage {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-increments the primary key
     @Column(name = "messageid")
     private int messageid;
 
