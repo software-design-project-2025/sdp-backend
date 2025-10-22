@@ -14,6 +14,6 @@ public interface GroupDocRepo extends JpaRepository<GroupDoc, Integer> {
      * @param groupID The ID of the chat.
      * @return A list of ChatDoc entities.
      */
-    List<GroupDoc> findByGroupID(Integer groupID);
+    List<GroupDoc> findByGroupid(Integer groupID);
 
 }
